@@ -211,11 +211,31 @@
         }
 
         .team-badge {
-            width: 8px;
-            height: 8px;
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
             background: linear-gradient(45deg, #667eea, #764ba2);
             flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border: 2px solid rgba(255,255,255,0.8);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .team-logo {
+            width: 24px;
+            height: 24px;
+            object-fit: contain;
+            border-radius: 2px;
+        }
+
+        .team-logo-fallback {
+            width: 12px;
+            height: 12px;
+            background: white;
+            border-radius: 50%;
         }
 
         .vs-section {
@@ -606,8 +626,31 @@
         }
 
         function getTeamLogo(teamName) {
-            // Logos removed - function kept for future use
-            return '';
+            // Logo URLs - you'll need to replace these with actual logo URLs
+            const logoMap = {
+                'Arsenal': 'https://logos.textgiraffe.com/logos/logo-name/Arsenal-designstyle-boots-m.png',
+                'Aston Villa': 'https://logos.textgiraffe.com/logos/logo-name/Aston-Villa-designstyle-boots-m.png',
+                'AFC Bournemouth': 'https://logos.textgiraffe.com/logos/logo-name/Bournemouth-designstyle-boots-m.png',
+                'Brentford': 'https://logos.textgiraffe.com/logos/logo-name/Brentford-designstyle-boots-m.png',
+                'Brighton & Hove Albion': 'https://logos.textgiraffe.com/logos/logo-name/Brighton-designstyle-boots-m.png',
+                'Burnley': 'https://logos.textgiraffe.com/logos/logo-name/Burnley-designstyle-boots-m.png',
+                'Chelsea': 'https://logos.textgiraffe.com/logos/logo-name/Chelsea-designstyle-boots-m.png',
+                'Crystal Palace': 'https://logos.textgiraffe.com/logos/logo-name/Crystal-Palace-designstyle-boots-m.png',
+                'Everton': 'https://logos.textgiraffe.com/logos/logo-name/Everton-designstyle-boots-m.png',
+                'Fulham': 'https://logos.textgiraffe.com/logos/logo-name/Fulham-designstyle-boots-m.png',
+                'Liverpool FC': 'https://logos.textgiraffe.com/logos/logo-name/Liverpool-designstyle-boots-m.png',
+                'Luton Town': 'https://logos.textgiraffe.com/logos/logo-name/Luton-designstyle-boots-m.png',
+                'Manchester City': 'https://logos.textgiraffe.com/logos/logo-name/Manchester-City-designstyle-boots-m.png',
+                'Manchester United': 'https://logos.textgiraffe.com/logos/logo-name/Manchester-United-designstyle-boots-m.png',
+                'Newcastle United': 'https://logos.textgiraffe.com/logos/logo-name/Newcastle-designstyle-boots-m.png',
+                'Nottingham Forest': 'https://logos.textgiraffe.com/logos/logo-name/Nottingham-Forest-designstyle-boots-m.png',
+                'Sheffield United': 'https://logos.textgiraffe.com/logos/logo-name/Sheffield-United-designstyle-boots-m.png',
+                'Tottenham Hotspur': 'https://logos.textgiraffe.com/logos/logo-name/Tottenham-designstyle-boots-m.png',
+                'West Ham United': 'https://logos.textgiraffe.com/logos/logo-name/West-Ham-designstyle-boots-m.png',
+                'Wolverhampton Wanderers': 'https://logos.textgiraffe.com/logos/logo-name/Wolves-designstyle-boots-m.png'
+            };
+            
+            return logoMap[teamName] || null;
         }
 
         function convertTo24Hour(timeStr) {
@@ -706,15 +749,30 @@
                         <div class="fixtures-grid">`;
                     
                     dataToShow[gameweek][date].forEach((fixture, index) => {
-                        html += `<div class="fixture-card" style="animation-delay: ${index * 0.1}s">
+                        const homeTeamLogo = getTeamLogo(fixture.homeTeam);
+                        const awayTeamLogo = getTeamLogo(fixture.awayTeam);
+                        
+                        html += `<div class="fixture-card" style="animation-delay: ${index * 0.1}s" onclick="openMatchStats('${fixture.homeTeam}', '${fixture.awayTeam}', '${fixture.time}', '${fixture.date.toDateString()}')">
                             <div class="fixture-content">
                                 <div class="fixture-teams">
                                     <div class="team">
-                                        <div class="team-badge"></div>
+                                        <div class="team-badge">
+                                            ${homeTeamLogo ? 
+                                                `<img src="${homeTeamLogo}" alt="${fixture.homeTeam}" class="team-logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                                                 <div class="team-logo-fallback" style="display:none;"></div>` : 
+                                                `<div class="team-logo-fallback"></div>`
+                                            }
+                                        </div>
                                         <div class="team-name">${fixture.homeTeam}</div>
                                     </div>
                                     <div class="team">
-                                        <div class="team-badge"></div>
+                                        <div class="team-badge">
+                                            ${awayTeamLogo ? 
+                                                `<img src="${awayTeamLogo}" alt="${fixture.awayTeam}" class="team-logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                                                 <div class="team-logo-fallback" style="display:none;"></div>` : 
+                                                `<div class="team-logo-fallback"></div>`
+                                            }
+                                        </div>
                                         <div class="team-name">${fixture.awayTeam}</div>
                                     </div>
                                 </div>
@@ -795,6 +853,19 @@
             document.getElementById('gameweekSelect').value = 'all';
             document.getElementById('teamSearch').value = '';
             displayFixtures();
+        }
+
+        function openMatchStats(homeTeam, awayTeam, time, date) {
+            // Create URL parameters for the stats page
+            const params = new URLSearchParams({
+                home: homeTeam,
+                away: awayTeam,
+                time: time,
+                date: date
+            });
+            
+            // Open stats page in new window/tab
+            window.open(`match-stats.html?${params.toString()}`, '_blank');
         }
 
         // Event listeners
