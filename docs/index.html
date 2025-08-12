@@ -319,7 +319,7 @@
         </div>
 
         <div class="timezone-info">
-            🕐 All times displayed in UK time (GMT/BST automatically adjusted)
+            🕐 All times displayed in UK time (+8 hours from scraped data)
         </div>
 
         <div class="controls">
@@ -472,19 +472,18 @@
             const { homeTeam, awayTeam } = parseTeams(teamsStr);
             
             try {
-                // Parse date and time, assuming the scraped data is in UTC
+                // Parse date and time
                 const [day, month, year] = dateStr.split('/');
-                
-                // Create date object from the scraped time (assuming UTC)
                 const [hours, minutes] = time.split(':');
-                const utcDateTime = new Date(Date.UTC(year, month - 1, day, hours, minutes));
                 
-                // Convert to UK time (this automatically handles GMT/BST)
-                const ukDate = new Date(utcDateTime.toLocaleString('en-US', { timeZone: 'Europe/London' }));
+                // Create initial date object from scraped data
+                const scrapedDateTime = new Date(year, month - 1, day, hours, minutes);
                 
-                // Format UK time for display
-                const ukTimeString = utcDateTime.toLocaleTimeString('en-GB', { 
-                    timeZone: 'Europe/London',
+                // Add 8 hours to correct the timezone difference
+                const correctedDateTime = new Date(scrapedDateTime.getTime() + (8 * 60 * 60 * 1000));
+                
+                // Format corrected time for display
+                const correctedTimeString = correctedDateTime.toLocaleTimeString('en-GB', { 
                     hour: '2-digit', 
                     minute: '2-digit',
                     hour12: false
@@ -494,10 +493,10 @@
                     homeTeam: homeTeam,
                     awayTeam: awayTeam,
                     teams: `${homeTeam} vs ${awayTeam}`, // For search purposes
-                    date: ukDate,
-                    time: ukTimeString,
+                    date: correctedDateTime,
+                    time: correctedTimeString,
                     original: fixtureText,
-                    utcDateTime: utcDateTime // Keep original for reference
+                    correctedDateTime: correctedDateTime // Keep corrected time for reference
                 };
             } catch (e) {
                 console.error('Error parsing fixture:', fixtureText, e);
