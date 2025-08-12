@@ -168,59 +168,34 @@
         }
 
         .fixture-teams {
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             font-weight: bold;
             color: #2c3e50;
             margin-bottom: 15px;
             line-height: 1.4;
+            text-align: center;
         }
 
         .teams-container {
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            justify-content: center;
             gap: 15px;
-        }
-
-        .team {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex: 1;
-        }
-
-        .team.home {
-            justify-content: flex-start;
-        }
-
-        .team.away {
-            justify-content: flex-end;
-            flex-direction: row-reverse;
-        }
-
-        .team-logo {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid #ecf0f1;
+            flex-wrap: wrap;
         }
 
         .team-name {
             font-weight: 600;
             font-size: 1rem;
-            text-align: center;
         }
 
         .vs-divider {
             background: linear-gradient(45deg, #e74c3c, #f39c12);
             color: white;
-            padding: 8px 12px;
-            border-radius: 20px;
+            padding: 6px 12px;
+            border-radius: 15px;
             font-weight: bold;
-            font-size: 0.9rem;
-            min-width: 40px;
-            text-align: center;
+            font-size: 0.85rem;
             box-shadow: 0 2px 8px rgba(0,0,0,0.2);
         }
 
@@ -549,33 +524,8 @@
         }
 
         function getTeamLogo(teamName) {
-            // Team logo URLs - you can replace these with actual logo URLs
-            const logoMap = {
-                'Arsenal': 'https://logos.textgiraffe.com/logos/logo-name/Arsenal-designstyle-birthday-m.png',
-                'Aston Villa': 'https://logos.textgiraffe.com/logos/logo-name/Aston-designstyle-kiddo-m.png',
-                'AFC Bournemouth': 'https://logos.textgiraffe.com/logos/logo-name/Bournemouth-designstyle-kiddo-m.png',
-                'Brentford': 'https://logos.textgiraffe.com/logos/logo-name/Brentford-designstyle-kiddo-m.png',
-                'Brighton & Hove Albion': 'https://logos.textgiraffe.com/logos/logo-name/Brighton-designstyle-kiddo-m.png',
-                'Burnley': 'https://logos.textgiraffe.com/logos/logo-name/Burnley-designstyle-kiddo-m.png',
-                'Chelsea': 'https://logos.textgiraffe.com/logos/logo-name/Chelsea-designstyle-kiddo-m.png',
-                'Crystal Palace': 'https://logos.textgiraffe.com/logos/logo-name/Crystal-designstyle-kiddo-m.png',
-                'Everton': 'https://logos.textgiraffe.com/logos/logo-name/Everton-designstyle-kiddo-m.png',
-                'Fulham': 'https://logos.textgiraffe.com/logos/logo-name/Fulham-designstyle-kiddo-m.png',
-                'Leeds United': 'https://logos.textgiraffe.com/logos/logo-name/Leeds-designstyle-kiddo-m.png',
-                'Liverpool FC': 'https://logos.textgiraffe.com/logos/logo-name/Liverpool-designstyle-kiddo-m.png',
-                'Luton Town': 'https://logos.textgiraffe.com/logos/logo-name/Luton-designstyle-kiddo-m.png',
-                'Manchester City': 'https://logos.textgiraffe.com/logos/logo-name/Manchester-designstyle-kiddo-m.png',
-                'Manchester United': 'https://logos.textgiraffe.com/logos/logo-name/Manchester-designstyle-anniversary-m.png',
-                'Newcastle United': 'https://logos.textgiraffe.com/logos/logo-name/Newcastle-designstyle-kiddo-m.png',
-                'Nottingham Forest': 'https://logos.textgiraffe.com/logos/logo-name/Nottingham-designstyle-kiddo-m.png',
-                'Sheffield United': 'https://logos.textgiraffe.com/logos/logo-name/Sheffield-designstyle-kiddo-m.png',
-                'Sunderland': 'https://logos.textgiraffe.com/logos/logo-name/Sunderland-designstyle-kiddo-m.png',
-                'Tottenham Hotspur': 'https://logos.textgiraffe.com/logos/logo-name/Tottenham-designstyle-kiddo-m.png',
-                'West Ham United': 'https://logos.textgiraffe.com/logos/logo-name/West-designstyle-kiddo-m.png',
-                'Wolverhampton Wanderers': 'https://logos.textgiraffe.com/logos/logo-name/Wolverhampton-designstyle-kiddo-m.png'
-            };
-            
-            return logoMap[teamName] || 'https://via.placeholder.com/32x32/3498db/ffffff?text=FC';
+            // Logos removed - function kept for future use
+            return '';
         }
 
         function convertTo24Hour(timeStr) {
@@ -674,15 +624,9 @@
                         html += `<div class="fixture-card" style="animation-delay: ${index * 0.05}s">
                             <div class="fixture-teams">
                                 <div class="teams-container">
-                                    <div class="team home">
-                                        <img src="${getTeamLogo(fixture.homeTeam)}" alt="${fixture.homeTeam}" class="team-logo" onerror="this.src='https://via.placeholder.com/32x32/3498db/ffffff?text=FC'">
-                                        <span class="team-name">${fixture.homeTeam}</span>
-                                    </div>
+                                    <span class="team-name">${fixture.homeTeam}</span>
                                     <div class="vs-divider">VS</div>
-                                    <div class="team away">
-                                        <img src="${getTeamLogo(fixture.awayTeam)}" alt="${fixture.awayTeam}" class="team-logo" onerror="this.src='https://via.placeholder.com/32x32/3498db/ffffff?text=FC'">
-                                        <span class="team-name">${fixture.awayTeam}</span>
-                                    </div>
+                                    <span class="team-name">${fixture.awayTeam}</span>
                                 </div>
                             </div>
                             <div class="fixture-time">
