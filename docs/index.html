@@ -146,21 +146,22 @@
 
         .fixtures-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
+            gap: 25px;
             margin-bottom: 20px;
         }
 
         .fixture-card {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 20px;
-            padding: 25px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.2);
-            transition: all 0.3s ease;
+            background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.85) 100%);
+            border-radius: 24px;
+            padding: 0;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.3);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             position: relative;
             overflow: hidden;
+            min-height: 140px;
         }
 
         .fixture-card::before {
@@ -169,58 +170,151 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, #ff6b6b, #ffa726, #4ecdc4);
+            height: 6px;
+            background: linear-gradient(90deg, #38ef7d, #11998e, #667eea, #764ba2);
+            background-size: 300% 100%;
+            animation: gradientShift 6s ease infinite;
         }
 
         .fixture-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 40px rgba(0,0,0,0.2);
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+        }
+
+        .fixture-content {
+            padding: 30px 25px 25px 25px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+            min-height: 134px;
         }
 
         .fixture-teams {
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: #2c3e50;
-            margin-bottom: 15px;
-            line-height: 1.4;
-            text-align: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            position: relative;
         }
 
-        .teams-container {
+        .team {
             display: flex;
+            flex-direction: column;
             align-items: center;
-            justify-content: center;
-            gap: 15px;
-            flex-wrap: wrap;
+            flex: 1;
+            max-width: 40%;
         }
 
         .team-name {
-            font-weight: 600;
-            font-size: 1rem;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #2c3e50;
+            text-align: center;
+            line-height: 1.2;
+            margin-bottom: 4px;
+        }
+
+        .team-badge {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            margin-top: 4px;
+        }
+
+        .vs-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-width: 80px;
+            position: relative;
         }
 
         .vs-divider {
-            background: linear-gradient(45deg, #e74c3c, #f39c12);
+            background: linear-gradient(45deg, #ff6b6b, #ffa726);
             color: white;
-            padding: 6px 12px;
-            border-radius: 15px;
+            padding: 8px 16px;
+            border-radius: 20px;
             font-weight: bold;
-            font-size: 0.85rem;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            font-size: 0.9rem;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+            letter-spacing: 1px;
+            position: relative;
+        }
+
+        .vs-divider::before,
+        .vs-divider::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 25px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #ddd, transparent);
+            transform: translateY(-50%);
+        }
+
+        .vs-divider::before {
+            left: -30px;
+        }
+
+        .vs-divider::after {
+            right: -30px;
         }
 
         .fixture-time {
-            font-size: 1rem;
-            color: #7f8c8d;
             display: flex;
             align-items: center;
-            gap: 8px;
             justify-content: center;
+            gap: 10px;
+            background: rgba(103, 126, 234, 0.1);
+            padding: 12px 20px;
+            border-radius: 16px;
+            margin-top: auto;
         }
 
         .time-icon {
+            font-size: 1.2rem;
+            color: #667eea;
+        }
+
+        .time-text {
             font-size: 1.1rem;
+            font-weight: 600;
+            color: #2c3e50;
+            letter-spacing: 0.5px;
+        }
+
+        /* Alternating card styles for variety */
+        .fixture-card:nth-child(3n+1) {
+            background: linear-gradient(135deg, rgba(255,245,235,0.95) 0%, rgba(255,235,215,0.85) 100%);
+        }
+
+        .fixture-card:nth-child(3n+1)::before {
+            background: linear-gradient(90deg, #ff9a9e, #fecfef, #fecfef);
+        }
+
+        .fixture-card:nth-child(3n+2) {
+            background: linear-gradient(135deg, rgba(235,255,245,0.95) 0%, rgba(215,255,235,0.85) 100%);
+        }
+
+        .fixture-card:nth-child(3n+2)::before {
+            background: linear-gradient(90deg, #a8edea, #fed6e3, #d299c2);
+        }
+
+        .fixture-card:nth-child(3n+3) {
+            background: linear-gradient(135deg, rgba(245,245,255,0.95) 0%, rgba(235,235,255,0.85) 100%);
+        }
+
+        .fixture-card:nth-child(3n+3)::before {
+            background: linear-gradient(90deg, #667eea, #764ba2, #f093fb);
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
 
         .loading {
