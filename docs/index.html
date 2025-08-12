@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premier League Fixtures</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚽ Premier League Fixtures</h1>
+            <p>Latest fixtures updated automatically</p>
+            <div id="lastUpdated" class="last-updated"></div>
+        </div>
+
+        <div class="controls">
+            <input type="text" id="teamSearch" class="search-box" placeholder="Search for a specific team..." />
+            <button onclick="loadFixtures()" class="btn">🔄 Refresh</button>
+            <button onclick="clearSearch()" class="btn">🗑️ Clear Search</button>
+        </div>
+
+        <div id="loading" class="loading" style="display: none;">
+            <div class="spinner"></div>
+            <p>Loading fixtures...</p>
+        </div>
+
+        <div id="error" class="error" style="display: none;"></div>
+        <div id="fixtures" class="fixtures-grid"></div>
+    </div>
+
+    <script>
+        let allFixtures = [];
+        let filteredFixtures = [];
+
+        async function loadFixtures() {
+            const loadingDiv = document.getElementById('loading');
+            const errorDiv = document.getElementById('error');
+            const fixturesDiv = document.getElementById('fixtures');
+            const lastUpdatedDiv = document.getElementById('lastUpdated');
+            
+            loadingDiv.style.display = 'block';
+            errorDiv.style.display = 'none';
+            fixturesDiv.innerHTML = '';
+
+            try {
+                const response = await fetch('fixtures.json');
+                if (!response.ok) throw new Error('Failed to load fixtures');
+                
+                const data = await response.json();
+                allFixtures = data.fixtures || [];
+                filteredFixtures = [...allFixtures];
+                
+                // Update last updated time
+                if (data.last_updated) {
+                    const date = new Date(data.last_updated);
+                    lastUpdatedDiv.textContent = `Last updated: ${date.toLocaleString()}`;
+                }
+                
+                displayFixtures(filteredFixtures);
+            } catch (error) {
+                console.error('Error:', error);
+                errorDiv.textContent = 'Error loading fixtures. Please try again.';
+                errorDiv.style.display = 'block';
+            } finally {
+                loadingDiv.style.display = 'none';
+            }
+        }
+
+        function displayFixtures(fixtures) {
+            const fixturesDiv = document.getElementById('fixtures');
+            
+            if (fixtures.length === 0) {
+                fixturesDiv.innerHTML = '<div class="no-results">No fixtures found matching your search.</div>';
+                return;
+            }
+
+            fixturesDiv.innerHTML = fixtures.map((fixture, index) => `
+                <div class="fixture-card" style="animation-delay: ${index * 0.1}s">
+                    <div class="fixture-content">
+                        <strong>${fixture}</strong>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterFixtures() {
+            const searchTerm = document.getElementById('teamSearch').value.toLowerCase().trim();
+            
+            if (searchTerm === '') {
+                filteredFixtures = [...allFixtures];
+            } else {
+                filteredFixtures = allFixtures.filter(fixture => 
+                    fixture.toLowerCase().includes(searchTerm)
+                );
+            }
+            
+            displayFixtures(filteredFixtures);
+        }
+
+        function clearSearch() {
+            document.getElementById('teamSearch').value = '';
+            filteredFixtures = [...allFixtures];
+            displayFixtures(filteredFixtures);
+        }
+
+        // Event listeners
+        document.getElementById('teamSearch').addEventListener('input', filterFixtures);
+
+        // Load fixtures on page load
+        window.addEventListener('load', loadFixtures);
+    </script>
+</body>
+</html>
