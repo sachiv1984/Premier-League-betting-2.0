@@ -146,7 +146,7 @@
 
         .fixtures-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
             gap: 25px;
             margin-bottom: 20px;
         }
@@ -161,7 +161,7 @@
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             position: relative;
             overflow: hidden;
-            min-height: 140px;
+            min-height: 120px;
         }
 
         .fixture-card::before {
@@ -182,37 +182,32 @@
         }
 
         .fixture-content {
-            padding: 30px 25px 25px 25px;
+            padding: 25px;
             display: flex;
-            flex-direction: column;
             justify-content: space-between;
+            align-items: center;
             height: 100%;
-            min-height: 134px;
+            min-height: 100px;
         }
 
         .fixture-teams {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            position: relative;
+            flex-direction: column;
+            gap: 12px;
+            flex: 1;
         }
 
         .team {
             display: flex;
-            flex-direction: column;
             align-items: center;
-            flex: 1;
-            max-width: 40%;
+            gap: 10px;
         }
 
         .team-name {
             font-weight: 700;
             font-size: 1.1rem;
             color: #2c3e50;
-            text-align: center;
             line-height: 1.2;
-            margin-bottom: 4px;
         }
 
         .team-badge {
@@ -220,58 +215,24 @@
             height: 8px;
             border-radius: 50%;
             background: linear-gradient(45deg, #667eea, #764ba2);
-            margin-top: 4px;
+            flex-shrink: 0;
         }
 
         .vs-section {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-width: 80px;
-            position: relative;
-        }
-
-        .vs-divider {
-            background: linear-gradient(45deg, #ff6b6b, #ffa726);
-            color: white;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-weight: bold;
-            font-size: 0.9rem;
-            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
-            letter-spacing: 1px;
-            position: relative;
-        }
-
-        .vs-divider::before,
-        .vs-divider::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            width: 25px;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, #ddd, transparent);
-            transform: translateY(-50%);
-        }
-
-        .vs-divider::before {
-            left: -30px;
-        }
-
-        .vs-divider::after {
-            right: -30px;
+            display: none;
         }
 
         .fixture-time {
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 10px;
+            gap: 6px;
             background: rgba(103, 126, 234, 0.1);
-            padding: 12px 20px;
+            padding: 16px 20px;
             border-radius: 16px;
-            margin-top: auto;
+            min-width: 80px;
+            flex-shrink: 0;
         }
 
         .time-icon {
@@ -745,17 +706,22 @@
                         <div class="fixtures-grid">`;
                     
                     dataToShow[gameweek][date].forEach((fixture, index) => {
-                        html += `<div class="fixture-card" style="animation-delay: ${index * 0.05}s">
-                            <div class="fixture-teams">
-                                <div class="teams-container">
-                                    <span class="team-name">${fixture.homeTeam}</span>
-                                    <div class="vs-divider">VS</div>
-                                    <span class="team-name">${fixture.awayTeam}</span>
+                        html += `<div class="fixture-card" style="animation-delay: ${index * 0.1}s">
+                            <div class="fixture-content">
+                                <div class="fixture-teams">
+                                    <div class="team">
+                                        <div class="team-badge"></div>
+                                        <div class="team-name">${fixture.homeTeam}</div>
+                                    </div>
+                                    <div class="team">
+                                        <div class="team-badge"></div>
+                                        <div class="team-name">${fixture.awayTeam}</div>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="fixture-time">
-                                <span class="time-icon">🕐</span>
-                                <span>${fixture.time}</span>
+                                <div class="fixture-time">
+                                    <span class="time-icon">🕐</span>
+                                    <span class="time-text">${fixture.time}</span>
+                                </div>
                             </div>
                         </div>`;
                     });
