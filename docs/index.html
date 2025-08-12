@@ -168,11 +168,60 @@
         }
 
         .fixture-teams {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             font-weight: bold;
             color: #2c3e50;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
             line-height: 1.4;
+        }
+
+        .teams-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+        }
+
+        .team {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+        }
+
+        .team.home {
+            justify-content: flex-start;
+        }
+
+        .team.away {
+            justify-content: flex-end;
+            flex-direction: row-reverse;
+        }
+
+        .team-logo {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #ecf0f1;
+        }
+
+        .team-name {
+            font-weight: 600;
+            font-size: 1rem;
+            text-align: center;
+        }
+
+        .vs-divider {
+            background: linear-gradient(45deg, #e74c3c, #f39c12);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            min-width: 40px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
         }
 
         .fixture-time {
@@ -427,24 +476,130 @@
             const time = parts[parts.length - 1];
             const dateStr = parts[parts.length - 2];
             
-            // Everything else is team names
+            // Everything else is team names - need to split into home and away
             const teamsStr = parts.slice(0, -2).join(' ');
+            const { homeTeam, awayTeam } = parseTeams(teamsStr);
             
             try {
                 // Parse date (DD/MM/YYYY format)
                 const [day, month, year] = dateStr.split('/');
                 const date = new Date(year, month - 1, day);
                 
+                // Convert time to 24-hour format
+                const formattedTime = convertTo24Hour(time);
+                
                 return {
-                    teams: teamsStr,
+                    homeTeam: homeTeam,
+                    awayTeam: awayTeam,
+                    teams: `${homeTeam} vs ${awayTeam}`, // For search purposes
                     date: date,
-                    time: time,
+                    time: formattedTime,
                     original: fixtureText
                 };
             } catch (e) {
                 console.error('Error parsing fixture:', fixtureText, e);
                 return null;
             }
+        }
+
+        function parseTeams(teamsString) {
+            // Common team names that might cause splitting issues
+            const knownTeams = [
+                'Manchester United', 'Manchester City', 'Newcastle United', 'West Ham United',
+                'Sheffield United', 'Brighton & Hove Albion', 'Tottenham Hotspur',
+                'Wolverhampton Wanderers', 'Nottingham Forest', 'Crystal Palace',
+                'AFC Bournemouth', 'Liverpool FC', 'Arsenal', 'Chelsea', 'Aston Villa',
+                'Everton', 'Brentford', 'Fulham', 'Burnley', 'Luton Town', 'Leeds United',
+                'Sunderland'
+            ];
+            
+            // Sort by length (longest first) to match longer names first
+            const sortedTeams = [...knownTeams].sort((a, b) => b.length - a.length);
+            
+            let homeTeam = '';
+            let awayTeam = '';
+            let remainingString = teamsString;
+            
+            // Find home team (first team in the string)
+            for (const team of sortedTeams) {
+                if (remainingString.startsWith(team)) {
+                    homeTeam = team;
+                    remainingString = remainingString.substring(team.length).trim();
+                    break;
+                }
+            }
+            
+            // Find away team (what's left should be the away team)
+            for (const team of sortedTeams) {
+                if (remainingString === team) {
+                    awayTeam = team;
+                    break;
+                }
+            }
+            
+            // Fallback: if we couldn't parse properly, split roughly in the middle
+            if (!homeTeam || !awayTeam) {
+                const words = teamsString.split(' ');
+                const midPoint = Math.ceil(words.length / 2);
+                homeTeam = words.slice(0, midPoint).join(' ');
+                awayTeam = words.slice(midPoint).join(' ');
+            }
+            
+            return { homeTeam: homeTeam.trim(), awayTeam: awayTeam.trim() };
+        }
+
+        function getTeamLogo(teamName) {
+            // Team logo URLs - you can replace these with actual logo URLs
+            const logoMap = {
+                'Arsenal': 'https://logos.textgiraffe.com/logos/logo-name/Arsenal-designstyle-birthday-m.png',
+                'Aston Villa': 'https://logos.textgiraffe.com/logos/logo-name/Aston-designstyle-kiddo-m.png',
+                'AFC Bournemouth': 'https://logos.textgiraffe.com/logos/logo-name/Bournemouth-designstyle-kiddo-m.png',
+                'Brentford': 'https://logos.textgiraffe.com/logos/logo-name/Brentford-designstyle-kiddo-m.png',
+                'Brighton & Hove Albion': 'https://logos.textgiraffe.com/logos/logo-name/Brighton-designstyle-kiddo-m.png',
+                'Burnley': 'https://logos.textgiraffe.com/logos/logo-name/Burnley-designstyle-kiddo-m.png',
+                'Chelsea': 'https://logos.textgiraffe.com/logos/logo-name/Chelsea-designstyle-kiddo-m.png',
+                'Crystal Palace': 'https://logos.textgiraffe.com/logos/logo-name/Crystal-designstyle-kiddo-m.png',
+                'Everton': 'https://logos.textgiraffe.com/logos/logo-name/Everton-designstyle-kiddo-m.png',
+                'Fulham': 'https://logos.textgiraffe.com/logos/logo-name/Fulham-designstyle-kiddo-m.png',
+                'Leeds United': 'https://logos.textgiraffe.com/logos/logo-name/Leeds-designstyle-kiddo-m.png',
+                'Liverpool FC': 'https://logos.textgiraffe.com/logos/logo-name/Liverpool-designstyle-kiddo-m.png',
+                'Luton Town': 'https://logos.textgiraffe.com/logos/logo-name/Luton-designstyle-kiddo-m.png',
+                'Manchester City': 'https://logos.textgiraffe.com/logos/logo-name/Manchester-designstyle-kiddo-m.png',
+                'Manchester United': 'https://logos.textgiraffe.com/logos/logo-name/Manchester-designstyle-anniversary-m.png',
+                'Newcastle United': 'https://logos.textgiraffe.com/logos/logo-name/Newcastle-designstyle-kiddo-m.png',
+                'Nottingham Forest': 'https://logos.textgiraffe.com/logos/logo-name/Nottingham-designstyle-kiddo-m.png',
+                'Sheffield United': 'https://logos.textgiraffe.com/logos/logo-name/Sheffield-designstyle-kiddo-m.png',
+                'Sunderland': 'https://logos.textgiraffe.com/logos/logo-name/Sunderland-designstyle-kiddo-m.png',
+                'Tottenham Hotspur': 'https://logos.textgiraffe.com/logos/logo-name/Tottenham-designstyle-kiddo-m.png',
+                'West Ham United': 'https://logos.textgiraffe.com/logos/logo-name/West-designstyle-kiddo-m.png',
+                'Wolverhampton Wanderers': 'https://logos.textgiraffe.com/logos/logo-name/Wolverhampton-designstyle-kiddo-m.png'
+            };
+            
+            return logoMap[teamName] || 'https://via.placeholder.com/32x32/3498db/ffffff?text=FC';
+        }
+
+        function convertTo24Hour(timeStr) {
+            // If already in 24-hour format (contains :), return as is
+            if (timeStr.includes(':')) {
+                return timeStr;
+            }
+            
+            // Handle formats like "1230" or "0930"
+            if (timeStr.length === 4) {
+                const hours = timeStr.substring(0, 2);
+                const minutes = timeStr.substring(2, 4);
+                return `${hours}:${minutes}`;
+            }
+            
+            // Handle formats like "430" (4:30)
+            if (timeStr.length === 3) {
+                const hours = timeStr.substring(0, 1);
+                const minutes = timeStr.substring(1, 3);
+                return `0${hours}:${minutes}`;
+            }
+            
+            // If it's already in correct format or unrecognized, return as is
+            return timeStr;
         }
 
         function updateGameweekSelect() {
@@ -517,7 +672,19 @@
                     
                     dataToShow[gameweek][date].forEach((fixture, index) => {
                         html += `<div class="fixture-card" style="animation-delay: ${index * 0.05}s">
-                            <div class="fixture-teams">${fixture.teams}</div>
+                            <div class="fixture-teams">
+                                <div class="teams-container">
+                                    <div class="team home">
+                                        <img src="${getTeamLogo(fixture.homeTeam)}" alt="${fixture.homeTeam}" class="team-logo" onerror="this.src='https://via.placeholder.com/32x32/3498db/ffffff?text=FC'">
+                                        <span class="team-name">${fixture.homeTeam}</span>
+                                    </div>
+                                    <div class="vs-divider">VS</div>
+                                    <div class="team away">
+                                        <img src="${getTeamLogo(fixture.awayTeam)}" alt="${fixture.awayTeam}" class="team-logo" onerror="this.src='https://via.placeholder.com/32x32/3498db/ffffff?text=FC'">
+                                        <span class="team-name">${fixture.awayTeam}</span>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="fixture-time">
                                 <span class="time-icon">🕐</span>
                                 <span>${fixture.time}</span>
