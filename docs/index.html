@@ -98,6 +98,17 @@
             box-shadow: 0 6px 20px rgba(0,0,0,0.3);
         }
 
+        .timezone-info {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            backdrop-filter: blur(10px);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
         .gameweek-header {
             background: rgba(255, 255, 255, 0.15);
             color: white;
@@ -205,6 +216,7 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            justify-content: center;
         }
 
         .time-icon {
@@ -306,6 +318,10 @@
             <div id="lastUpdated" class="last-updated"></div>
         </div>
 
+        <div class="timezone-info">
+            🕐 All times displayed in UK time (GMT/BST automatically adjusted)
+        </div>
+
         <div class="controls">
             <select id="gameweekSelect" class="gameweek-select">
                 <option value="all">All Gameweeks</option>
@@ -369,7 +385,7 @@
                 // Update last updated time
                 if (data.last_updated) {
                     const date = new Date(data.last_updated);
-                    lastUpdatedDiv.textContent = `Last updated: ${date.toLocaleString()}`;
+                    lastUpdatedDiv.textContent = `Last updated: ${date.toLocaleString('en-GB', { timeZone: 'Europe/London' })}`;
                 }
                 
             } catch (error) {
@@ -456,20 +472,32 @@
             const { homeTeam, awayTeam } = parseTeams(teamsStr);
             
             try {
-                // Parse date (DD/MM/YYYY format)
+                // Parse date and time, assuming the scraped data is in UTC
                 const [day, month, year] = dateStr.split('/');
-                const date = new Date(year, month - 1, day);
                 
-                // Convert time to 24-hour format
-                const formattedTime = convertTo24Hour(time);
+                // Create date object from the scraped time (assuming UTC)
+                const [hours, minutes] = time.split(':');
+                const utcDateTime = new Date(Date.UTC(year, month - 1, day, hours, minutes));
+                
+                // Convert to UK time (this automatically handles GMT/BST)
+                const ukDate = new Date(utcDateTime.toLocaleString('en-US', { timeZone: 'Europe/London' }));
+                
+                // Format UK time for display
+                const ukTimeString = utcDateTime.toLocaleTimeString('en-GB', { 
+                    timeZone: 'Europe/London',
+                    hour: '2-digit', 
+                    minute: '2-digit',
+                    hour12: false
+                });
                 
                 return {
                     homeTeam: homeTeam,
                     awayTeam: awayTeam,
                     teams: `${homeTeam} vs ${awayTeam}`, // For search purposes
-                    date: date,
-                    time: formattedTime,
-                    original: fixtureText
+                    date: ukDate,
+                    time: ukTimeString,
+                    original: fixtureText,
+                    utcDateTime: utcDateTime // Keep original for reference
                 };
             } catch (e) {
                 console.error('Error parsing fixture:', fixtureText, e);
@@ -529,6 +557,9 @@
         }
 
         function convertTo24Hour(timeStr) {
+            // This function is now less important since we're handling timezone conversion
+            // But keeping it for any edge cases
+            
             // If already in 24-hour format (contains :), return as is
             if (timeStr.includes(':')) {
                 return timeStr;
