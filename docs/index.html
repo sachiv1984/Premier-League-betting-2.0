@@ -1,14 +1,607 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>TEST - Premier League Fixtures</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premier League Fixtures</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .last-updated {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .controls {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .search-box, .gameweek-select {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .search-box {
+            width: 250px;
+        }
+
+        .gameweek-select {
+            width: 200px;
+            cursor: pointer;
+        }
+
+        .search-box:focus, .gameweek-select:focus {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 25px;
+            background: linear-gradient(45deg, #ff6b6b, #ffa726);
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .gameweek-header {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            margin: 30px 0 20px 0;
+            backdrop-filter: blur(10px);
+        }
+
+        .gameweek-header h2 {
+            font-size: 2rem;
+            margin-bottom: 5px;
+        }
+
+        .gameweek-header p {
+            opacity: 0.9;
+        }
+
+        .date-section {
+            margin-bottom: 30px;
+        }
+
+        .date-header {
+            background: linear-gradient(45deg, #4ecdc4, #44a08d);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 12px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .fixtures-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .fixture-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .fixture-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #ff6b6b, #ffa726, #4ecdc4);
+        }
+
+        .fixture-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.2);
+        }
+
+        .fixture-teams {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+
+        .fixture-time {
+            font-size: 1rem;
+            color: #7f8c8d;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .time-icon {
+            font-size: 1.1rem;
+        }
+
+        .loading {
+            text-align: center;
+            color: white;
+            font-size: 1.5rem;
+            margin: 50px 0;
+        }
+
+        .no-results {
+            text-align: center;
+            color: white;
+            font-size: 1.5rem;
+            margin: 50px 0;
+            opacity: 0.8;
+        }
+
+        .error, .info {
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            margin: 20px 0;
+            color: white;
+        }
+
+        .error {
+            background: rgba(255, 107, 107, 0.9);
+        }
+
+        .info {
+            background: rgba(76, 175, 80, 0.9);
+        }
+
+        .spinner {
+            border: 4px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top: 4px solid white;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        .stats-bar {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            backdrop-filter: blur(10px);
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .search-box, .gameweek-select {
+                width: 100%;
+            }
+            
+            .fixtures-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-bar {
+                gap: 15px;
+            }
+        }
+    </style>
 </head>
-<body style="background: red; color: white; text-align: center; padding: 50px;">
-    <h1>🧪 TEST VERSION - If you see this, the file updated successfully!</h1>
-    <p>This means caching was the issue. Now replace this with the full enhanced version.</p>
-    <p>Current time: <span id="time"></span></p>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚽ Premier League Fixtures</h1>
+            <p>Organized by gameweek with automatic updates</p>
+            <div id="lastUpdated" class="last-updated"></div>
+        </div>
+
+        <div class="controls">
+            <select id="gameweekSelect" class="gameweek-select">
+                <option value="all">All Gameweeks</option>
+            </select>
+            <input type="text" id="teamSearch" class="search-box" placeholder="Search for teams..." />
+            <button onclick="loadFixtures()" class="btn">🔄 Refresh</button>
+            <button onclick="clearFilters()" class="btn">🗑️ Clear Filters</button>
+        </div>
+
+        <div class="stats-bar" id="statsBar" style="display: none;">
+            <div class="stat-item" id="totalFixtures">0 fixtures</div>
+            <div class="stat-item" id="selectedGameweek">All gameweeks</div>
+            <div class="stat-item" id="dateRange">-</div>
+        </div>
+
+        <div id="loading" class="loading" style="display: none;">
+            <div class="spinner"></div>
+            <p>Loading fixtures...</p>
+        </div>
+
+        <div id="error" class="error" style="display: none;"></div>
+        <div id="info" class="info" style="display: none;"></div>
+        <div id="fixtures" class="fixtures-container"></div>
+    </div>
+
     <script>
-        document.getElementById('time').textContent = new Date().toLocaleString();
+        let allFixtures = [];
+        let filteredFixtures = [];
+        let gameweekData = {};
+
+        async function loadFixtures() {
+            const loadingDiv = document.getElementById('loading');
+            const errorDiv = document.getElementById('error');
+            const infoDiv = document.getElementById('info');
+            const fixturesDiv = document.getElementById('fixtures');
+            const lastUpdatedDiv = document.getElementById('lastUpdated');
+            
+            loadingDiv.style.display = 'block';
+            errorDiv.style.display = 'none';
+            infoDiv.style.display = 'none';
+            fixturesDiv.innerHTML = '';
+
+            try {
+                const response = await fetch('fixtures.json?t=' + new Date().getTime());
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: Fixtures file not found`);
+                }
+                
+                const data = await response.json();
+                allFixtures = data.fixtures || [];
+                
+                // Process fixtures into gameweeks
+                processFixtures();
+                
+                // Update UI
+                updateGameweekSelect();
+                updateStats();
+                displayFixtures();
+                
+                // Update last updated time
+                if (data.last_updated) {
+                    const date = new Date(data.last_updated);
+                    lastUpdatedDiv.textContent = `Last updated: ${date.toLocaleString()}`;
+                }
+                
+            } catch (error) {
+                console.error('Error:', error);
+                errorDiv.innerHTML = `
+                    <strong>Error loading fixtures</strong><br>
+                    ${error.message}<br><br>
+                    Make sure the GitHub Action has run to generate fixtures.json
+                `;
+                errorDiv.style.display = 'block';
+            } finally {
+                loadingDiv.style.display = 'none';
+            }
+        }
+
+        function processFixtures() {
+            gameweekData = {};
+            
+            // Group fixtures by date first
+            const fixturesByDate = {};
+            
+            allFixtures.forEach(fixture => {
+                const parsed = parseFixture(fixture);
+                if (parsed) {
+                    const dateKey = parsed.date.toDateString();
+                    if (!fixturesByDate[dateKey]) {
+                        fixturesByDate[dateKey] = [];
+                    }
+                    fixturesByDate[dateKey].push(parsed);
+                }
+            });
+            
+            // Sort dates and assign gameweeks
+            const sortedDates = Object.keys(fixturesByDate).sort((a, b) => 
+                new Date(a) - new Date(b)
+            );
+            
+            let currentGameweek = 1;
+            let fixturesInCurrentGameweek = 0;
+            
+            sortedDates.forEach(dateKey => {
+                const dayFixtures = fixturesByDate[dateKey];
+                
+                // Sort fixtures within the day by time, then alphabetically
+                dayFixtures.sort((a, b) => {
+                    if (a.time !== b.time) {
+                        return a.time.localeCompare(b.time);
+                    }
+                    return a.teams.localeCompare(b.teams);
+                });
+                
+                dayFixtures.forEach(fixture => {
+                    // Start new gameweek if current one has 10 fixtures
+                    if (fixturesInCurrentGameweek >= 10) {
+                        currentGameweek++;
+                        fixturesInCurrentGameweek = 0;
+                    }
+                    
+                    if (!gameweekData[currentGameweek]) {
+                        gameweekData[currentGameweek] = {};
+                    }
+                    
+                    if (!gameweekData[currentGameweek][dateKey]) {
+                        gameweekData[currentGameweek][dateKey] = [];
+                    }
+                    
+                    gameweekData[currentGameweek][dateKey].push(fixture);
+                    fixturesInCurrentGameweek++;
+                });
+            });
+        }
+
+        function parseFixture(fixtureText) {
+            // Parse format like "Liverpool FC AFC Bournemouth 15/08/2025 12:00"
+            const parts = fixtureText.trim().split(' ');
+            if (parts.length < 3) return null;
+            
+            // Find date and time (last two parts should be date and time)
+            const time = parts[parts.length - 1];
+            const dateStr = parts[parts.length - 2];
+            
+            // Everything else is team names
+            const teamsStr = parts.slice(0, -2).join(' ');
+            
+            try {
+                // Parse date (DD/MM/YYYY format)
+                const [day, month, year] = dateStr.split('/');
+                const date = new Date(year, month - 1, day);
+                
+                return {
+                    teams: teamsStr,
+                    date: date,
+                    time: time,
+                    original: fixtureText
+                };
+            } catch (e) {
+                console.error('Error parsing fixture:', fixtureText, e);
+                return null;
+            }
+        }
+
+        function updateGameweekSelect() {
+            const select = document.getElementById('gameweekSelect');
+            select.innerHTML = '<option value="all">All Gameweeks</option>';
+            
+            Object.keys(gameweekData).sort((a, b) => parseInt(a) - parseInt(b)).forEach(gw => {
+                const option = document.createElement('option');
+                option.value = gw;
+                option.textContent = `Gameweek ${gw}`;
+                select.appendChild(option);
+            });
+        }
+
+        function displayFixtures() {
+            const selectedGameweek = document.getElementById('gameweekSelect').value;
+            const searchTerm = document.getElementById('teamSearch').value.toLowerCase().trim();
+            const fixturesDiv = document.getElementById('fixtures');
+            
+            let dataToShow = selectedGameweek === 'all' ? gameweekData : {[selectedGameweek]: gameweekData[selectedGameweek]};
+            
+            // Filter by search term if provided
+            if (searchTerm) {
+                const filtered = {};
+                Object.keys(dataToShow).forEach(gw => {
+                    if (dataToShow[gw]) {
+                        Object.keys(dataToShow[gw]).forEach(date => {
+                            const matchingFixtures = dataToShow[gw][date].filter(fixture => 
+                                fixture.teams.toLowerCase().includes(searchTerm)
+                            );
+                            if (matchingFixtures.length > 0) {
+                                if (!filtered[gw]) filtered[gw] = {};
+                                filtered[gw][date] = matchingFixtures;
+                            }
+                        });
+                    }
+                });
+                dataToShow = filtered;
+            }
+            
+            if (Object.keys(dataToShow).length === 0) {
+                fixturesDiv.innerHTML = '<div class="no-results">No fixtures found matching your criteria.</div>';
+                return;
+            }
+            
+            let html = '';
+            
+            Object.keys(dataToShow).sort((a, b) => parseInt(a) - parseInt(b)).forEach(gameweek => {
+                if (!dataToShow[gameweek]) return;
+                
+                html += `<div class="gameweek-header">
+                    <h2>Gameweek ${gameweek}</h2>
+                    <p>${getGameweekFixtureCount(gameweek)} fixtures</p>
+                </div>`;
+                
+                const sortedDates = Object.keys(dataToShow[gameweek]).sort((a, b) => new Date(a) - new Date(b));
+                
+                sortedDates.forEach(date => {
+                    const dateObj = new Date(date);
+                    const formattedDate = dateObj.toLocaleDateString('en-GB', {
+                        weekday: 'long',
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                    });
+                    
+                    html += `<div class="date-section">
+                        <div class="date-header">📅 ${formattedDate}</div>
+                        <div class="fixtures-grid">`;
+                    
+                    dataToShow[gameweek][date].forEach((fixture, index) => {
+                        html += `<div class="fixture-card" style="animation-delay: ${index * 0.05}s">
+                            <div class="fixture-teams">${fixture.teams}</div>
+                            <div class="fixture-time">
+                                <span class="time-icon">🕐</span>
+                                <span>${fixture.time}</span>
+                            </div>
+                        </div>`;
+                    });
+                    
+                    html += `</div></div>`;
+                });
+            });
+            
+            fixturesDiv.innerHTML = html;
+            updateStats();
+        }
+
+        function getGameweekFixtureCount(gameweek) {
+            if (!gameweekData[gameweek]) return 0;
+            let count = 0;
+            Object.keys(gameweekData[gameweek]).forEach(date => {
+                count += gameweekData[gameweek][date].length;
+            });
+            return count;
+        }
+
+        function updateStats() {
+            const selectedGameweek = document.getElementById('gameweekSelect').value;
+            const searchTerm = document.getElementById('teamSearch').value.toLowerCase().trim();
+            
+            const statsBar = document.getElementById('statsBar');
+            const totalFixtures = document.getElementById('totalFixtures');
+            const selectedGwStat = document.getElementById('selectedGameweek');
+            const dateRange = document.getElementById('dateRange');
+            
+            let count = 0;
+            let minDate = null;
+            let maxDate = null;
+            
+            const dataToShow = selectedGameweek === 'all' ? gameweekData : {[selectedGameweek]: gameweekData[selectedGameweek]};
+            
+            Object.keys(dataToShow).forEach(gw => {
+                if (dataToShow[gw]) {
+                    Object.keys(dataToShow[gw]).forEach(date => {
+                        const fixtures = searchTerm 
+                            ? dataToShow[gw][date].filter(f => f.teams.toLowerCase().includes(searchTerm))
+                            : dataToShow[gw][date];
+                        count += fixtures.length;
+                        
+                        if (fixtures.length > 0) {
+                            const dateObj = new Date(date);
+                            if (!minDate || dateObj < minDate) minDate = dateObj;
+                            if (!maxDate || dateObj > maxDate) maxDate = dateObj;
+                        }
+                    });
+                }
+            });
+            
+            totalFixtures.textContent = `${count} fixture${count !== 1 ? 's' : ''}`;
+            selectedGwStat.textContent = selectedGameweek === 'all' ? 'All gameweeks' : `Gameweek ${selectedGameweek}`;
+            
+            if (minDate && maxDate) {
+                if (minDate.getTime() === maxDate.getTime()) {
+                    dateRange.textContent = minDate.toLocaleDateString('en-GB');
+                } else {
+                    dateRange.textContent = `${minDate.toLocaleDateString('en-GB')} - ${maxDate.toLocaleDateString('en-GB')}`;
+                }
+            } else {
+                dateRange.textContent = '-';
+            }
+            
+            statsBar.style.display = count > 0 ? 'flex' : 'none';
+        }
+
+        function clearFilters() {
+            document.getElementById('gameweekSelect').value = 'all';
+            document.getElementById('teamSearch').value = '';
+            displayFixtures();
+        }
+
+        // Event listeners
+        document.getElementById('gameweekSelect').addEventListener('change', displayFixtures);
+        document.getElementById('teamSearch').addEventListener('input', displayFixtures);
+
+        // Load fixtures on page load
+        window.addEventListener('load', loadFixtures);
     </script>
 </body>
 </html>
