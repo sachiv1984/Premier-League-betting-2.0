@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Head-to-Head Stats</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .match-title {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+
+        .match-details {
+            color: #7f8c8d;
+            font-size: 1.2rem;
+        }
+
+        .back-button {
+            position: absolute;
+            top: 30px;
+            left: 30px;
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .back-button:hover {
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .stats-grid {
+            display: grid;
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .stats-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .section-header {
+            padding: 20px;
+            font-size: 1.4rem;
+            font-weight: bold;
+            text-align: center;
+            color: white;
+        }
+
+        .team-stats-header {
+            background: linear-gradient(45deg, #e74c3c, #c0392b);
+        }
+
+        .player-stats-header {
+            background: linear-gradient(45deg, #2c3e50, #34495e);
+        }
+
+        .stats-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .team-comparison {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 20px;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .team-column {
+            text-align: center;
+        }
+
+        .team-name {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+
+        .stat-row {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 20px;
+            align-items: center;
+            padding: 12px 20px;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        .stat-row:hover {
+            background: rgba(52, 152, 219, 0.05);
+        }
+
+        .stat-value {
+            font-weight: bold;
+            font-size: 1.1rem;
+            padding: 8px 15px;
+            border-radius: 10px;
+        }
+
+        .stat-label {
+            text-align: center;
+            font-weight: bold;
+            color: #34495e;
+            min-width: 120px;
+        }
+
+        .home-stat {
+            text-align: right;
+            background: linear-gradient(45deg, #e74c3c, #c0392b);
+            color: white;
+        }
+
+        .away-stat {
+            text-align: left;
+            background: linear-gradient(45deg, #2c3e50, #34495e);
+            color: white;
+        }
+
+        .form-indicators {
+            display: flex;
+            gap: 5px;
+            justify-content: center;
+            margin-top: 10px;
+        }
+
+        .form-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .win { background: #27ae60; }
+        .draw { background: #f39c12; }
+        .loss { background: #e74c3c; }
+
+        .player-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .player-table th {
+            background: #34495e;
+            color: white;
+            padding: 15px 10px;
+            text-align: center;
+            font-weight: bold;
+            border-right: 1px solid #2c3e50;
+        }
+
+        .player-table td {
+            padding: 12px 10px;
+            text-align: center;
+            border-bottom: 1px solid #ecf0f1;
+            border-right: 1px solid #ecf0f1;
+        }
+
+        .player-table tr:hover {
+            background: rgba(52, 152, 219, 0.05);
+        }
+
+        .player-name {
+            text-align: left !important;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .highlight-stat {
+            background: linear-gradient(45deg, #27ae60, #2ecc71);
+            color: white;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+
+        .section-divider {
+            height: 3px;
+            background: linear-gradient(90deg, #e74c3c, #2c3e50);
+            margin: 30px 0;
+            border-radius: 2px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            .match-title {
+                font-size: 1.8rem;
+            }
+
+            .back-button {
+                position: relative;
+                top: auto;
+                left: auto;
+                margin-bottom: 20px;
+            }
+
+            .stat-row {
+                grid-template-columns: 1fr;
+                gap: 10px;
+                text-align: center;
+            }
+
+            .player-table {
+                font-size: 0.9rem;
+            }
+
+            .player-table th,
+            .player-table td {
+                padding: 8px 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="back-button" onclick="history.back()">← Back to Fixtures</button>
+    
+    <div class="container">
+        <div class="header">
+            <h1 class="match-title">Liverpool FC vs Arsenal</h1>
+            <p class="match-details">Saturday, 16 August 2025 • 17:30 • Anfield Stadium</p>
+        </div>
+
+        <div class="stats-grid">
+            <!-- Team Statistics Section -->
+            <div class="stats-section">
+                <div class="section-header team-stats-header">
+                    Team Statistics (Season Averages)
+                </div>
+                
+                <div class="stat-row">
+                    <div class="stat-value home-stat">1.43</div>
+                    <div class="stat-label">Goals per Game</div>
+                    <div class="stat-value away-stat">2.21</div>
+                </div>
+
+                <div class="stat-row">
+                    <div class="stat-value home-stat">0.76</div>
+                    <div class="stat-label">Goals Conceded</div>
+                    <div class="stat-value away-stat">1.12</div>
+                </div>
+
+                <div class="stat-row">
+                    <div class="stat-value home-stat">58.2%</div>
+                    <div class="stat-label">Possession %</div>
+                    <div class="stat-value away-stat">62.4%</div>
+                </div>
+
+                <div class="stat-row">
+                    <div class="stat-value home-stat">12.4</div>
+                    <div class="stat-label">Shots per Game</div>
+                    <div class="stat-value away-stat">16.8</div>
+                </div>
+
+                <div class="stat-row">
+                    <div class="stat-value home-stat">4.2</div>
+                    <div class="stat-label">Shots on Target</div>
+                    <div class="stat-value away-stat">6.1</div>
+                </div>
+
+                <div class="stat-row">
+                    <div class="stat-value home-stat">89.5%</div>
+                    <div class="stat-label">Pass Accuracy</div>
+                    <div class="stat-value away-stat">91.2%</div>
+                </div>
+
+                <div class="stat-row">
+                    <div class="stat-value home-stat">
+                        <div class="form-indicators">
+                            <span class="form-dot win"></span>
+                            <span class="form-dot win"></span>
+                            <span class="form-dot draw"></span>
+                            <span class="form-dot win"></span>
+                            <span class="form-dot win"></span>
+                        </div>
+                    </div>
+                    <div class="stat-label">Last 5 Games</div>
+                    <div class="stat-value away-stat">
+                        <div class="form-indicators">
+                            <span class="form-dot win"></span>
+                            <span class="form-dot win"></span>
+                            <span class="form-dot win"></span>
+                            <span class="form-dot draw"></span>
+                            <span class="form-dot win"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-divider"></div>
+
+            <!-- Defensive Statistics -->
+            <div class="stats-section">
+                <div class="section-header player-stats-header">
+                    Defensive Statistics
+                </div>
+                
+                <table class="player-table">
+                    <thead>
+                        <tr>
+                            <th>Liverpool Player</th>
+                            <th>Mins</th>
+                            <th>Fouls Committed</th>
+                            <th>Tackles Made</th>
+                            <th>Yellow Cards</th>
+                            <th>Potential Opponent</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="player-name">V. van Dijk</td>
+                            <td>90</td>
+                            <td>1.2</td>
+                            <td class="highlight-stat">4.8</td>
+                            <td>0</td>
+                            <td>G. Jesus</td>
+                        </tr>
+                        <tr>
+                            <td class="player-name">A. Robertson</td>
+                            <td>85</td>
+                            <td>2.1</td>
+                            <td>3.4</td>
+                            <td>1</td>
+                            <td>B. Saka</td>
+                        </tr>
+                        <tr>
+                            <td class="player-name">T. Alexander-Arnold</td>
+                            <td>88</td>
+                            <td>1.8</td>
+                            <td>2.9</td>
+                            <td>2</td>
+                            <td>G. Martinelli</td>
+                        </tr>
+                        <tr>
+                            <td class="player-name">F. Fabinho</td>
+                            <td>79</td>
+                            <td>2.4</td>
+                            <td class="highlight-stat">4.1</td>
+                            <td>3</td>
+                            <td>M. Ødegaard</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div style="margin: 20px 0; text-align: center; font-weight: bold; color: #34495e;">VS</div>
+
+                <table class="player-table">
+                    <thead>
+                        <tr>
+                            <th>Arsenal Player</th>
+                            <th>Mins</th>
+                            <th>Fouls Committed</th>
+                            <th>Tackles Made</th>
+                            <th>Yellow Cards</th>
+                            <th>Potential Opponent</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="player-name">W. Saliba</td>
+                            <td>90</td>
+                            <td>0.8</td>
+                            <td class="highlight-stat">3.9</td>
+                            <td>1</td>
+                            <td>M. Salah</td>
+                        </tr>
+                        <tr>
+                            <td class="player-name">G. Gabriel</td>
+                            <td>87</td>
+                            <td>1.4</td>
+                            <td>3.2</td>
+                            <td>2</td>
+                            <td>D. Núñez</td>
+                        </tr>
+                        <tr>
+                            <td class="player-name">O. Zinchenko</td>
+                            <td>82</td>
+                            <td>1.9</td>
+                            <td>2.8</td>
+                            <td>1</td>
+                            <td>M. Salah</td>
+                        </tr>
+                        <tr>
+                            <td class="player-name">T. Partey</td>
+                            <td>85</td>
+                            <td>2.2</td>
+                            <td class="highlight-stat">3.7</td>
+                            <td>4</td>
+                            <td>S. Mané</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Offensive Statistics -->
+            <div class="stats-section">
+                <div class="section-header team-stats-header">
+                    Offensive Statistics
+                </div>
+                
+                <table class="player-table">
+                    <thead>
+                        <tr>
+                            <th>Liverpool Player</th>
+                            <th>Mins</th>
+                            <th>Goals</th>
+                            <th>Assists</th>
+                            <th>Shots on Target</th>
+                            <th>Key Passes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="player-name">M. Salah ⭐</td>
+                            <td>85</td>
+                            <td class="highlight-stat">24</td>
+                            <td>8</td>
+                            <td class="highlight-stat">42</td>
+                            <td>28</td>
+                        </tr>
+                        <tr>
+                            <td class="player-name">D
