@@ -31,6 +31,7 @@
             margin-bottom: 30px;
             text-align: center;
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            backdrop-filter: blur(20px);
         }
 
         .match-title {
@@ -55,12 +56,17 @@
             cursor: pointer;
             font-weight: bold;
             transition: all 0.3s ease;
+            font-size: 16px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .back-button:hover {
             background: white;
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
         }
 
         .stats-grid {
@@ -74,6 +80,7 @@
             border-radius: 20px;
             overflow: hidden;
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            backdrop-filter: blur(20px);
         }
 
         .section-header {
@@ -160,6 +167,7 @@
             gap: 5px;
             justify-content: center;
             margin-top: 10px;
+            flex-wrap: wrap;
         }
 
         .form-dot {
@@ -176,6 +184,7 @@
         .player-table {
             width: 100%;
             border-collapse: collapse;
+            overflow-x: auto;
         }
 
         .player-table th {
@@ -185,6 +194,7 @@
             text-align: center;
             font-weight: bold;
             border-right: 1px solid #2c3e50;
+            white-space: nowrap;
         }
 
         .player-table td {
@@ -202,6 +212,7 @@
             text-align: left !important;
             font-weight: bold;
             color: #2c3e50;
+            white-space: nowrap;
         }
 
         .highlight-stat {
@@ -218,46 +229,145 @@
             border-radius: 2px;
         }
 
+        .table-wrapper {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .vs-divider {
+            margin: 20px 0;
+            text-align: center;
+            font-weight: bold;
+            color: #34495e;
+            font-size: 1.2rem;
+        }
+
         @media (max-width: 768px) {
-            .container {
+            body {
                 padding: 10px;
+            }
+
+            .container {
+                padding: 0;
+            }
+
+            .back-button {
+                position: static;
+                margin-bottom: 20px;
+                width: fit-content;
+                font-size: 14px;
+                padding: 10px 16px;
+            }
+
+            .header {
+                padding: 20px 15px;
+                margin-bottom: 20px;
             }
 
             .match-title {
                 font-size: 1.8rem;
+                line-height: 1.2;
+                margin-bottom: 15px;
             }
 
-            .back-button {
-                position: relative;
-                top: auto;
-                left: auto;
-                margin-bottom: 20px;
+            .match-details {
+                font-size: 1rem;
+            }
+
+            .stats-grid {
+                gap: 15px;
+            }
+
+            .section-header {
+                padding: 15px 10px;
+                font-size: 1.2rem;
             }
 
             .stat-row {
                 grid-template-columns: 1fr;
                 gap: 10px;
                 text-align: center;
+                padding: 15px;
+            }
+
+            .stat-label {
+                order: -1;
+                margin-bottom: 10px;
+                min-width: auto;
+            }
+
+            .stat-value {
+                font-size: 1rem;
+                padding: 6px 12px;
+                margin: 0 auto;
+                width: fit-content;
+            }
+
+            .home-stat, .away-stat {
+                text-align: center;
             }
 
             .player-table {
+                font-size: 0.85rem;
+            }
+
+            .player-table th,
+            .player-table td {
+                padding: 8px 6px;
+                font-size: 0.8rem;
+            }
+
+            .player-name {
+                font-size: 0.85rem;
+            }
+
+            .form-indicators {
+                justify-content: center;
+                gap: 3px;
+            }
+
+            .form-dot {
+                width: 10px;
+                height: 10px;
+            }
+
+            .table-wrapper {
+                margin: 0 -15px;
+                padding: 0 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .match-title {
+                font-size: 1.5rem;
+            }
+
+            .match-details {
                 font-size: 0.9rem;
             }
 
             .player-table th,
             .player-table td {
-                padding: 8px 5px;
+                padding: 6px 4px;
+                font-size: 0.75rem;
+            }
+
+            .stat-row {
+                padding: 12px 10px;
             }
         }
     </style>
 </head>
 <body>
-    <button class="back-button" onclick="history.back()">← Back to Fixtures</button>
-    
     <div class="container">
+        <button class="back-button" onclick="goBackToFixtures()">
+            <span>←</span> 
+            <span>Back to Fixtures</span>
+        </button>
+        
         <div class="header">
-            <h1 class="match-title">Liverpool FC vs Arsenal</h1>
-            <p class="match-details">Saturday, 16 August 2025 • 17:30 • Anfield Stadium</p>
+            <h1 class="match-title" id="matchTitle">Loading...</h1>
+            <p class="match-details" id="matchDetails">Loading match details...</p>
         </div>
 
         <div class="stats-grid">
@@ -334,101 +444,105 @@
                     Defensive Statistics
                 </div>
                 
-                <table class="player-table">
-                    <thead>
-                        <tr>
-                            <th>Liverpool Player</th>
-                            <th>Mins</th>
-                            <th>Fouls Committed</th>
-                            <th>Tackles Made</th>
-                            <th>Yellow Cards</th>
-                            <th>Potential Opponent</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td class="player-name">V. van Dijk</td>
-                            <td>90</td>
-                            <td>1.2</td>
-                            <td class="highlight-stat">4.8</td>
-                            <td>0</td>
-                            <td>G. Jesus</td>
-                        </tr>
-                        <tr>
-                            <td class="player-name">A. Robertson</td>
-                            <td>85</td>
-                            <td>2.1</td>
-                            <td>3.4</td>
-                            <td>1</td>
-                            <td>B. Saka</td>
-                        </tr>
-                        <tr>
-                            <td class="player-name">T. Alexander-Arnold</td>
-                            <td>88</td>
-                            <td>1.8</td>
-                            <td>2.9</td>
-                            <td>2</td>
-                            <td>G. Martinelli</td>
-                        </tr>
-                        <tr>
-                            <td class="player-name">F. Fabinho</td>
-                            <td>79</td>
-                            <td>2.4</td>
-                            <td class="highlight-stat">4.1</td>
-                            <td>3</td>
-                            <td>M. Ødegaard</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="table-wrapper">
+                    <table class="player-table">
+                        <thead>
+                            <tr>
+                                <th>Home Player</th>
+                                <th>Mins</th>
+                                <th>Fouls</th>
+                                <th>Tackles</th>
+                                <th>Cards</th>
+                                <th>Opponent</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="player-name">V. van Dijk</td>
+                                <td>90</td>
+                                <td>1.2</td>
+                                <td class="highlight-stat">4.8</td>
+                                <td>0</td>
+                                <td>G. Jesus</td>
+                            </tr>
+                            <tr>
+                                <td class="player-name">A. Robertson</td>
+                                <td>85</td>
+                                <td>2.1</td>
+                                <td>3.4</td>
+                                <td>1</td>
+                                <td>B. Saka</td>
+                            </tr>
+                            <tr>
+                                <td class="player-name">T. Alexander-Arnold</td>
+                                <td>88</td>
+                                <td>1.8</td>
+                                <td>2.9</td>
+                                <td>2</td>
+                                <td>G. Martinelli</td>
+                            </tr>
+                            <tr>
+                                <td class="player-name">F. Fabinho</td>
+                                <td>79</td>
+                                <td>2.4</td>
+                                <td class="highlight-stat">4.1</td>
+                                <td>3</td>
+                                <td>M. Ødegaard</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
 
-                <div style="margin: 20px 0; text-align: center; font-weight: bold; color: #34495e;">VS</div>
+                <div class="vs-divider">VS</div>
 
-                <table class="player-table">
-                    <thead>
-                        <tr>
-                            <th>Arsenal Player</th>
-                            <th>Mins</th>
-                            <th>Fouls Committed</th>
-                            <th>Tackles Made</th>
-                            <th>Yellow Cards</th>
-                            <th>Potential Opponent</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td class="player-name">W. Saliba</td>
-                            <td>90</td>
-                            <td>0.8</td>
-                            <td class="highlight-stat">3.9</td>
-                            <td>1</td>
-                            <td>M. Salah</td>
-                        </tr>
-                        <tr>
-                            <td class="player-name">G. Gabriel</td>
-                            <td>87</td>
-                            <td>1.4</td>
-                            <td>3.2</td>
-                            <td>2</td>
-                            <td>D. Núñez</td>
-                        </tr>
-                        <tr>
-                            <td class="player-name">O. Zinchenko</td>
-                            <td>82</td>
-                            <td>1.9</td>
-                            <td>2.8</td>
-                            <td>1</td>
-                            <td>M. Salah</td>
-                        </tr>
-                        <tr>
-                            <td class="player-name">T. Partey</td>
-                            <td>85</td>
-                            <td>2.2</td>
-                            <td class="highlight-stat">3.7</td>
-                            <td>4</td>
-                            <td>S. Mané</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="table-wrapper">
+                    <table class="player-table">
+                        <thead>
+                            <tr>
+                                <th>Away Player</th>
+                                <th>Mins</th>
+                                <th>Fouls</th>
+                                <th>Tackles</th>
+                                <th>Cards</th>
+                                <th>Opponent</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="player-name">W. Saliba</td>
+                                <td>90</td>
+                                <td>0.8</td>
+                                <td class="highlight-stat">3.9</td>
+                                <td>1</td>
+                                <td>M. Salah</td>
+                            </tr>
+                            <tr>
+                                <td class="player-name">G. Gabriel</td>
+                                <td>87</td>
+                                <td>1.4</td>
+                                <td>3.2</td>
+                                <td>2</td>
+                                <td>D. Núñez</td>
+                            </tr>
+                            <tr>
+                                <td class="player-name">O. Zinchenko</td>
+                                <td>82</td>
+                                <td>1.9</td>
+                                <td>2.8</td>
+                                <td>1</td>
+                                <td>M. Salah</td>
+                            </tr>
+                            <tr>
+                                <td class="player-name">T. Partey</td>
+                                <td>85</td>
+                                <td>2.2</td>
+                                <td class="highlight-stat">3.7</td>
+                                <td>4</td>
+                                <td>S. Mané</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
             <!-- Offensive Statistics -->
@@ -437,25 +551,148 @@
                     Offensive Statistics
                 </div>
                 
-                <table class="player-table">
-                    <thead>
-                        <tr>
-                            <th>Liverpool Player</th>
-                            <th>Mins</th>
-                            <th>Goals</th>
-                            <th>Assists</th>
-                            <th>Shots on Target</th>
-                            <th>Key Passes</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td class="player-name">M. Salah ⭐</td>
-                            <td>85</td>
-                            <td class="highlight-stat">24</td>
-                            <td>8</td>
-                            <td class="highlight-stat">42</td>
-                            <td>28</td>
-                        </tr>
-                        <tr>
-                            <td class="player-name">D
+                <div class="table-wrapper">
+                    <table class="player-table">
+                        <thead>
+                            <tr>
+                                <th>Home Player</th>
+                                <th>Mins</th>
+                                <th>Goals</th>
+                                <th>Assists</th>
+                                <th>Shots OT</th>
+                                <th>Key Passes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="player-name">M. Salah ⭐</td>
+                                <td>85</td>
+                                <td class="highlight-stat">24</td>
+                                <td>8</td>
+                                <td class="highlight-stat">42</td>
+                                <td>28</td>
+                            </tr>
+                            <tr>
+                                <td class="player-name">D. Núñez</td>
+                                <td>78</td>
+                                <td>18</td>
+                                <td>5</td>
+                                <td>31</td>
+                                <td>15</td>
+                            </tr>
+                            <tr>
+                                <td class="player-name">S. Mané</td>
+                                <td>82</td>
+                                <td>15</td>
+                                <td class="highlight-stat">12</td>
+                                <td>28</td>
+                                <td>22</td>
+                            </tr>
+                            <tr>
+                                <td class="player-name">R. Firmino</td>
+                                <td>71</td>
+                                <td>9</td>
+                                <td>7</td>
+                                <td>19</td>
+                                <td>18</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="vs-divider">VS</div>
+
+                <div class="table-wrapper">
+                    <table class="player-table">
+                        <thead>
+                            <tr>
+                                <th>Away Player</th>
+                                <th>Mins</th>
+                                <th>Goals</th>
+                                <th>Assists</th>
+                                <th>Shots OT</th>
+                                <th>Key Passes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="player-name">G. Jesus ⭐</td>
+                                <td>89</td>
+                                <td class="highlight-stat">21</td>
+                                <td>7</td>
+                                <td class="highlight-stat">38</td>
+                                <td>25</td>
+                            </tr>
+                            <tr>
+                                <td class="player-name">B. Saka</td>
+                                <td>86</td>
+                                <td>14</td>
+                                <td class="highlight-stat">11</td>
+                                <td>29</td>
+                                <td>31</td>
+                            </tr>
+                            <tr>
+                                <td class="player-name">G. Martinelli</td>
+                                <td>81</td>
+                                <td>12</td>
+                                <td>8</td>
+                                <td>24</td>
+                                <td>19</td>
+                            </tr>
+                            <tr>
+                                <td class="player-name">M. Ødegaard</td>
+                                <td>88</td>
+                                <td>8</td>
+                                <td>9</td>
+                                <td>16</td>
+                                <td class="highlight-stat">41</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Get URL parameters and update the page title and details
+        function updateMatchInfo() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const homeTeam = urlParams.get('home') || 'Home Team';
+            const awayTeam = urlParams.get('away') || 'Away Team';
+            const time = urlParams.get('time') || '15:00';
+            const date = urlParams.get('date') || new Date().toDateString();
+            
+            // Update the page title
+            document.title = `${homeTeam} vs ${awayTeam} - Head-to-Head Stats`;
+            
+            // Update the match title
+            document.getElementById('matchTitle').textContent = `${homeTeam} vs ${awayTeam}`;
+            
+            // Format and update match details
+            const dateObj = new Date(date);
+            const formattedDate = dateObj.toLocaleDateString('en-GB', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            
+            document.getElementById('matchDetails').textContent = `${formattedDate} • ${time} • Venue TBD`;
+        }
+
+        function goBackToFixtures() {
+            // Navigate back to the fixtures page
+            window.location.href = 'index.html'; // or whatever your fixtures page is called
+        }
+
+        // Run when page loads
+        window.addEventListener('load', updateMatchInfo);
+
+        // Handle browser back button
+        window.addEventListener('popstate', function() {
+            goBackToFixtures();
+        });
+    </script>
+</body>
+</html>
