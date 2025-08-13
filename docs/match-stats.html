@@ -154,7 +154,8 @@
             text-align: center;
             font-weight: bold;
             color: #34495e;
-            min-width: 120px;
+            min-width: 140px;
+            font-size: 0.95rem;
         }
 
         .home-stat {
@@ -192,27 +193,46 @@
             width: 100%;
             border-collapse: collapse;
             overflow-x: auto;
+            table-layout: fixed;
         }
 
         .player-table th {
             background: #34495e;
             color: white;
-            padding: 15px 10px;
+            padding: 15px 4px;
             text-align: center;
             font-weight: bold;
             border-right: 1px solid #2c3e50;
             white-space: nowrap;
+            font-size: 0.8rem;
+            min-width: 80px;
+            vertical-align: middle;
+        }
+
+        .player-table th:first-child {
+            text-align: left;
+            padding-left: 12px;
+            font-size: 0.85rem;
         }
 
         .player-table td {
-            padding: 12px 10px;
+            padding: 12px 4px;
             text-align: center;
             border-bottom: 1px solid #ecf0f1;
             border-right: 1px solid #ecf0f1;
+            font-size: 0.85rem;
+            vertical-align: middle;
+            min-width: 80px;
         }
 
         .player-table tr:hover {
             background: rgba(52, 152, 219, 0.05);
+        }
+
+        .player-table th:first-child,
+        .player-table td:first-child {
+            min-width: 180px;
+            width: 180px;
         }
 
         .player-name {
@@ -220,6 +240,9 @@
             font-weight: bold;
             color: #2c3e50;
             white-space: nowrap;
+            min-width: 180px !important;
+            width: 180px !important;
+            padding-left: 12px !important;
         }
 
         .highlight-stat {
@@ -227,6 +250,7 @@
             color: white;
             border-radius: 8px;
             font-weight: bold;
+            padding: 4px 8px;
         }
 
         .section-divider {
@@ -249,7 +273,7 @@
             font-size: 1.2rem;
         }
 
-        @media (max-width: 768px) {
+                    @media (max-width: 768px) {
             body {
                 padding: 10px;
             }
@@ -321,16 +345,27 @@
 
             .player-table {
                 font-size: 0.85rem;
+                table-layout: auto;
             }
 
             .player-table th,
             .player-table td {
-                padding: 8px 6px;
-                font-size: 0.8rem;
+                padding: 8px 4px;
+                font-size: 0.75rem;
+                min-width: 60px;
+            }
+
+            .player-table th:first-child,
+            .player-table td:first-child {
+                min-width: 120px;
+                width: 120px;
             }
 
             .player-name {
-                font-size: 0.85rem;
+                font-size: 0.75rem;
+                min-width: 120px !important;
+                width: 120px !important;
+                padding-left: 8px !important;
             }
 
             .form-indicators {
@@ -393,73 +428,85 @@
                 
                 <div class="stat-row">
                     <div class="stat-value home-stat">1.43</div>
-                    <div class="stat-label">Goals Scored (per game)</div>
+                    <div class="stat-label">Goals Scored</div>
                     <div class="stat-value away-stat">2.21</div>
                 </div>
 
                 <div class="stat-row">
                     <div class="stat-value home-stat">0.76</div>
-                    <div class="stat-label">Goals Conceded (per game)</div>
+                    <div class="stat-label">Goals Conceded</div>
                     <div class="stat-value away-stat">1.12</div>
                 </div>
 
                 <div class="stat-row">
                     <div class="stat-value home-stat">12.4</div>
-                    <div class="stat-label">Shots For (per game)</div>
+                    <div class="stat-label">Total Shots</div>
                     <div class="stat-value away-stat">16.8</div>
                 </div>
 
                 <div class="stat-row">
                     <div class="stat-value home-stat">9.2</div>
-                    <div class="stat-label">Shots Against (per game)</div>
+                    <div class="stat-label">Shots Against</div>
                     <div class="stat-value away-stat">11.5</div>
                 </div>
 
                 <div class="stat-row">
                     <div class="stat-value home-stat">4.2</div>
-                    <div class="stat-label">Shots on Target For (per game)</div>
+                    <div class="stat-label">On Target</div>
                     <div class="stat-value away-stat">6.1</div>
                 </div>
 
                 <div class="stat-row">
                     <div class="stat-value home-stat">3.1</div>
-                    <div class="stat-label">Shots on Target Against (per game)</div>
+                    <div class="stat-label">Off Target</div>
                     <div class="stat-value away-stat">3.8</div>
                 </div>
 
                 <div class="stat-row">
+                    <div class="stat-value home-stat">2.8</div>
+                    <div class="stat-label">Blocked</div>
+                    <div class="stat-value away-stat">4.5</div>
+                </div>
+
+                <div class="stat-row">
+                    <div class="stat-value home-stat">89.5</div>
+                    <div class="stat-label">Passing %</div>
+                    <div class="stat-value away-stat">91.2</div>
+                </div>
+
+                <div class="stat-row">
                     <div class="stat-value home-stat">11.8</div>
-                    <div class="stat-label">Fouls Committed (per game)</div>
+                    <div class="stat-label">Fouls Committed</div>
                     <div class="stat-value away-stat">13.2</div>
                 </div>
 
                 <div class="stat-row">
                     <div class="stat-value home-stat">12.6</div>
-                    <div class="stat-label">Fouls Won (per game)</div>
+                    <div class="stat-label">Fouls Won</div>
                     <div class="stat-value away-stat">11.4</div>
                 </div>
 
                 <div class="stat-row">
                     <div class="stat-value home-stat">5.3</div>
-                    <div class="stat-label">Corners For (per game)</div>
+                    <div class="stat-label">Corners For</div>
                     <div class="stat-value away-stat">7.1</div>
                 </div>
 
                 <div class="stat-row">
                     <div class="stat-value home-stat">4.8</div>
-                    <div class="stat-label">Corners Against (per game)</div>
+                    <div class="stat-label">Corners Against</div>
                     <div class="stat-value away-stat">5.2</div>
                 </div>
 
                 <div class="stat-row">
                     <div class="stat-value home-stat">2.1</div>
-                    <div class="stat-label">Cards For (per game)</div>
+                    <div class="stat-label">Cards For</div>
                     <div class="stat-value away-stat">1.8</div>
                 </div>
 
                 <div class="stat-row">
                     <div class="stat-value home-stat">2.3</div>
-                    <div class="stat-label">Cards Against (per game)</div>
+                    <div class="stat-label">Cards Against</div>
                     <div class="stat-value away-stat">2.0</div>
                 </div>
             </div>
@@ -477,11 +524,11 @@
                         <thead>
                             <tr>
                                 <th>Home Player</th>
-                                <th>Mins (avg/game)</th>
-                                <th>Fouls Committed (avg/game)</th>
-                                <th>Tackles Made (avg/game)</th>
-                                <th>Cards (Total)</th>
-                                <th>Potential Opponent</th>
+                                <th>Mins<br/>(avg/game)</th>
+                                <th>Fouls Committed<br/>(avg/game)</th>
+                                <th>Tackles Made<br/>(avg/game)</th>
+                                <th>Cards<br/>(Total)</th>
+                                <th>Potential<br/>Opponent</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -536,11 +583,11 @@
                         <thead>
                             <tr>
                                 <th>Away Player</th>
-                                <th>Mins (avg/game)</th>
-                                <th>Fouls Committed (avg/game)</th>
-                                <th>Tackles Made (avg/game)</th>
-                                <th>Cards (Total)</th>
-                                <th>Potential Opponent</th>
+                                <th>Mins<br/>(avg/game)</th>
+                                <th>Fouls Committed<br/>(avg/game)</th>
+                                <th>Tackles Made<br/>(avg/game)</th>
+                                <th>Cards<br/>(Total)</th>
+                                <th>Potential<br/>Opponent</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -600,9 +647,9 @@
                         <thead>
                             <tr>
                                 <th>Home Player</th>
-                                <th>Mins (avg/game)</th>
-                                <th>Fouls Won (avg/game)</th>
-                                <th>Potential Opponent</th>
+                                <th>Mins<br/>(avg/game)</th>
+                                <th>Fouls Won<br/>(avg/game)</th>
+                                <th>Potential<br/>Opponent</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -647,9 +694,9 @@
                         <thead>
                             <tr>
                                 <th>Away Player</th>
-                                <th>Mins (avg/game)</th>
-                                <th>Fouls Won (avg/game)</th>
-                                <th>Potential Opponent</th>
+                                <th>Mins<br/>(avg/game)</th>
+                                <th>Fouls Won<br/>(avg/game)</th>
+                                <th>Potential<br/>Opponent</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -699,9 +746,9 @@
                         <thead>
                             <tr>
                                 <th>Home Player</th>
-                                <th>Mins (avg/game)</th>
-                                <th>Shots on Target (avg/game)</th>
-                                <th>Shots (avg/game)</th>
+                                <th>Mins<br/>(avg/game)</th>
+                                <th>Shots on Target<br/>(avg/game)</th>
+                                <th>Shots<br/>(avg/game)</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -746,9 +793,9 @@
                         <thead>
                             <tr>
                                 <th>Away Player</th>
-                                <th>Mins (avg/game)</th>
-                                <th>Shots on Target (avg/game)</th>
-                                <th>Shots (avg/game)</th>
+                                <th>Mins<br/>(avg/game)</th>
+                                <th>Shots on Target<br/>(avg/game)</th>
+                                <th>Shots<br/>(avg/game)</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -798,10 +845,10 @@
                         <thead>
                             <tr>
                                 <th>Home Player</th>
-                                <th>Mins (avg/game)</th>
-                                <th>Goals (Total)</th>
-                                <th>Assists (avg/game)</th>
-                                <th>Goals/Assists per game</th>
+                                <th>Mins<br/>(avg/game)</th>
+                                <th>Goals<br/>(Total)</th>
+                                <th>Assists<br/>(avg/game)</th>
+                                <th>Goals/Assists<br/>per game</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -851,10 +898,10 @@
                         <thead>
                             <tr>
                                 <th>Away Player</th>
-                                <th>Mins (avg/game)</th>
-                                <th>Goals (Total)</th>
-                                <th>Assists (avg/game)</th>
-                                <th>Goals/Assists per game</th>
+                                <th>Mins<br/>(avg/game)</th>
+                                <th>Goals<br/>(Total)</th>
+                                <th>Assists<br/>(avg/game)</th>
+                                <th>Goals/Assists<br/>per game</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -877,6 +924,27 @@
                                 <td>81</td>
                                 <td>12</td>
                                 <td>0.42</td>
+                                <td>0.74</td>
+                            </tr>
+                            <tr>
+                                <td class="player-name">M. Ødegaard</td>
+                                <td>88</td>
+                                <td>8</td>
+                                <td>0.47</td>
+                                <td>0.68</td>
+                            </tr>
+                            <tr>
+                                <td class="player-name">E. Nketiah</td>
+                                <td>65</td>
+                                <td>6</td>
+                                <td>0.16</td>
+                                <td>0.42</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
                                 
     </div>
 
