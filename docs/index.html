@@ -162,6 +162,7 @@
             position: relative;
             overflow: hidden;
             min-height: 120px;
+            cursor: pointer;
         }
 
         .fixture-card::before {
@@ -362,25 +363,79 @@
         }
 
         @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
             .header h1 {
                 font-size: 2rem;
+            }
+            
+            .header p {
+                font-size: 1rem;
             }
             
             .controls {
                 flex-direction: column;
                 align-items: stretch;
+                gap: 15px;
             }
             
             .search-box, .gameweek-select {
                 width: 100%;
+                font-size: 16px;
+                padding: 15px 20px;
             }
             
             .fixtures-grid {
                 grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .fixture-card {
+                min-height: 100px;
+            }
+
+            .fixture-content {
+                padding: 20px 15px;
+                flex-direction: row;
+            }
+
+            .fixture-teams {
+                gap: 8px;
+            }
+
+            .team-name {
+                font-size: 1rem;
+            }
+
+            .fixture-time {
+                padding: 12px 15px;
+                min-width: 70px;
+            }
+
+            .time-text {
+                font-size: 1rem;
             }
 
             .stats-bar {
                 gap: 15px;
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .stat-item {
+                width: 100%;
+                text-align: center;
+            }
+
+            .gameweek-header h2 {
+                font-size: 1.5rem;
+            }
+
+            .date-header {
+                font-size: 1.1rem;
+                padding: 12px 20px;
             }
         }
     </style>
@@ -752,6 +807,7 @@
                         const homeTeamLogo = getTeamLogo(fixture.homeTeam);
                         const awayTeamLogo = getTeamLogo(fixture.awayTeam);
                         
+                        // Changed onclick to remove '_blank' parameter - now opens in same window
                         html += `<div class="fixture-card" style="animation-delay: ${index * 0.1}s" onclick="openMatchStats('${fixture.homeTeam}', '${fixture.awayTeam}', '${fixture.time}', '${fixture.date.toDateString()}')">
                             <div class="fixture-content">
                                 <div class="fixture-teams">
@@ -864,8 +920,8 @@
                 date: date
             });
             
-            // Open stats page in new window/tab
-            window.open(`match-stats.html?${params.toString()}`, '_blank');
+            // Navigate to stats page in same window instead of opening new tab
+            window.location.href = `match-stats.html?${params.toString()}`;
         }
 
         // Event listeners
