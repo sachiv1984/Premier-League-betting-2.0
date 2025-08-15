@@ -449,7 +449,7 @@
         </div>
 
         <div class="timezone-info">
-            🕐 All times displayed in UK time (+8 hours from scraped data)
+            🕐 All times displayed in UK time (+6 hours from scraped data)
         </div>
 
         <div class="controls">
@@ -609,8 +609,8 @@
                 // Create initial date object from scraped data
                 const scrapedDateTime = new Date(year, month - 1, day, hours, minutes);
                 
-                // Add 8 hours to correct the timezone difference
-                const correctedDateTime = new Date(scrapedDateTime.getTime() + (8 * 60 * 60 * 1000));
+                // Add 6 hours to correct the timezone difference
+                const correctedDateTime = new Date(scrapedDateTime.getTime() + (6 * 60 * 60 * 1000));
                 
                 // Format corrected time for display
                 const correctedTimeString = correctedDateTime.toLocaleTimeString('en-GB', { 
