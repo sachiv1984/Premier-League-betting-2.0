@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -189,6 +189,45 @@
         .draw { background: #f39c12; }
         .loss { background: #e74c3c; }
 
+        .foul-history {
+            display: flex;
+            gap: 4px;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .foul-dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            display: inline-block;
+            cursor: help;
+            transition: transform 0.2s ease;
+        }
+
+        .foul-dot:hover {
+            transform: scale(1.2);
+        }
+
+        .foul-dot.committed {
+            background: #27ae60;
+            box-shadow: 0 2px 4px rgba(39, 174, 96, 0.3);
+        }
+
+        .foul-dot.none {
+            background: #e74c3c;
+            box-shadow: 0 2px 4px rgba(231, 76, 60, 0.3);
+        }
+
+        .foul-dot.did-not-play {
+            background: transparent;
+            border: 2px solid #95a5a6;
+            width: 10px;
+            height: 10px;
+            box-shadow: none;
+        }
+
         .player-table {
             width: 100%;
             border-collapse: collapse;
@@ -273,7 +312,7 @@
             font-size: 1.2rem;
         }
 
-                    @media (max-width: 768px) {
+        @media (max-width: 768px) {
             body {
                 padding: 10px;
             }
@@ -376,6 +415,20 @@
             .form-dot {
                 width: 10px;
                 height: 10px;
+            }
+
+            .foul-history {
+                gap: 3px;
+            }
+
+            .foul-dot {
+                width: 12px;
+                height: 12px;
+            }
+
+            .foul-dot.did-not-play {
+                width: 8px;
+                height: 8px;
             }
 
             .table-wrapper {
@@ -528,6 +581,7 @@
                                 <th>Fouls Committed<br/>(avg/game)</th>
                                 <th>Tackles Made<br/>(avg/game)</th>
                                 <th>Cards<br/>(Total)</th>
+                                <th>Last 5 Games<br/>Foul History</th>
                                 <th>Potential<br/>Opponent</th>
                             </tr>
                         </thead>
@@ -538,6 +592,15 @@
                                 <td class="highlight-stat">2.4</td>
                                 <td>4.1</td>
                                 <td>8</td>
+                                <td>
+                                    <div class="foul-history">
+                                        <div class="foul-dot committed" title="2 fouls committed"></div>
+                                        <div class="foul-dot committed" title="3 fouls committed"></div>
+                                        <div class="foul-dot committed" title="1 foul committed"></div>
+                                        <div class="foul-dot committed" title="2 fouls committed"></div>
+                                        <div class="foul-dot none" title="0 fouls committed"></div>
+                                    </div>
+                                </td>
                                 <td>M. Ødegaard</td>
                             </tr>
                             <tr>
@@ -546,6 +609,15 @@
                                 <td class="highlight-stat">2.1</td>
                                 <td>3.4</td>
                                 <td>5</td>
+                                <td>
+                                    <div class="foul-history">
+                                        <div class="foul-dot committed" title="1 foul committed"></div>
+                                        <div class="foul-dot committed" title="3 fouls committed"></div>
+                                        <div class="foul-dot committed" title="2 fouls committed"></div>
+                                        <div class="foul-dot none" title="0 fouls committed"></div>
+                                        <div class="foul-dot committed" title="1 foul committed"></div>
+                                    </div>
+                                </td>
                                 <td>B. Saka</td>
                             </tr>
                             <tr>
@@ -554,6 +626,15 @@
                                 <td>1.8</td>
                                 <td>2.9</td>
                                 <td>6</td>
+                                <td>
+                                    <div class="foul-history">
+                                        <div class="foul-dot committed" title="2 fouls committed"></div>
+                                        <div class="foul-dot committed" title="1 foul committed"></div>
+                                        <div class="foul-dot none" title="0 fouls committed"></div>
+                                        <div class="foul-dot committed" title="3 fouls committed"></div>
+                                        <div class="foul-dot did-not-play" title="Did not play"></div>
+                                    </div>
+                                </td>
                                 <td>G. Martinelli</td>
                             </tr>
                             <tr>
@@ -562,6 +643,15 @@
                                 <td>1.6</td>
                                 <td>3.2</td>
                                 <td>4</td>
+                                <td>
+                                    <div class="foul-history">
+                                        <div class="foul-dot committed" title="1 foul committed"></div>
+                                        <div class="foul-dot committed" title="2 fouls committed"></div>
+                                        <div class="foul-dot committed" title="1 foul committed"></div>
+                                        <div class="foul-dot none" title="0 fouls committed"></div>
+                                        <div class="foul-dot committed" title="2 fouls committed"></div>
+                                    </div>
+                                </td>
                                 <td>T. Partey</td>
                             </tr>
                             <tr>
@@ -570,7 +660,16 @@
                                 <td>1.2</td>
                                 <td>4.8</td>
                                 <td>2</td>
-                                <td>G. Jesus</td>
+                                <td>
+                                    <div class="foul-history">
+                                        <div class="foul-dot committed" title="1 foul committed"></div>
+                                        <div class="foul-dot none" title="0 fouls committed"></div>
+                                        <div class="foul-dot committed" title="2 fouls committed"></div>
+                                        <div class="foul-dot none" title="0 fouls committed"></div>
+                                        <div class="foul-dot committed" title="1 foul committed"></div>
+                                    </div>
+                                </td>
+  <td>G. Jesus</td>
                             </tr>
                         </tbody>
                     </table>
