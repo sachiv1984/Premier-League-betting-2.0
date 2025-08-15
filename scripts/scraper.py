@@ -25,10 +25,12 @@ def get_fixtures_data():
             # Debug: Print the raw fixture text
             print(f"Raw fixture text: {fixture_text}")
             
-            # Check and replace "Today" and "Tomorrow"
-            if "Today" in fixture_text:
-                print(f"'Today' found in fixture: {fixture_text}")
-                fixture_text = fixture_text.replace("Today", today.strftime("%d/%m/%Y"))
+            # Handle missing dates (assume "Today" if no date is present)
+            if not any(char.isdigit() for char in fixture_text):  # No numeric date present
+                print(f"No date found in fixture: {fixture_text}. Assuming 'Today'.")
+                fixture_text += f" {today.strftime('%d/%m/%Y')}"
+            
+            # Replace "Tomorrow" with the actual date
             if "Tomorrow" in fixture_text:
                 print(f"'Tomorrow' found in fixture: {fixture_text}")
                 fixture_text = fixture_text.replace("Tomorrow", tomorrow.strftime("%d/%m/%Y"))
@@ -42,34 +44,3 @@ def get_fixtures_data():
     except Exception as e:
         print(f"Error scraping fixtures: {e}")
         return []
-
-def save_fixtures_json(fixtures):
-    """Save fixtures to JSON file"""
-    data = {
-        "last_updated": datetime.now().isoformat(),
-        "fixtures": fixtures,
-        "total_count": len(fixtures)
-    }
-    
-    # Save to docs directory for GitHub Pages
-    docs_dir = os.path.join(os.path.dirname(__file__), '..', 'docs')
-    os.makedirs(docs_dir, exist_ok=True)
-    
-    json_path = os.path.join(docs_dir, 'fixtures.json')
-    with open(json_path, 'w', encoding='utf-8') as f:
-        json.dump(data, f, indent=2, ensure_ascii=False)
-    
-    print(f"Saved {len(fixtures)} fixtures to {json_path}")
-
-def main():
-    print("Starting fixtures scraper...")
-    fixtures = get_fixtures_data()
-    
-    if fixtures:
-        save_fixtures_json(fixtures)
-        print("Fixtures updated successfully!")
-    else:
-        print("No fixtures found or error occurred")
-
-if __name__ == "__main__":
-    main()
