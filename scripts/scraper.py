@@ -25,8 +25,8 @@ def get_fixtures_data():
             # Debug: Print the raw fixture text
             print(f"Raw fixture text: {fixture_text}")
             
-            # Handle missing dates (assume "Today" if no date is present)
-            if not any(char.isdigit() for char in fixture_text):  # No numeric date present
+            # Check if the fixture text contains a date (look for '/')
+            if '/' not in fixture_text:  # No date format present
                 print(f"No date found in fixture: {fixture_text}. Assuming 'Today'.")
                 fixture_text += f" {today.strftime('%d/%m/%Y')}"
             
