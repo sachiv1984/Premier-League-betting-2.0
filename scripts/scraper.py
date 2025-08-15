@@ -2,7 +2,7 @@ import json
 import requests
 from bs4 import BeautifulSoup
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 
 def get_fixtures_data():
     """Scrape fixtures from OneFootball"""
@@ -16,8 +16,18 @@ def get_fixtures_data():
         fix = page.find_all("a", class_="MatchCard_matchCard__iOv4G")
         
         fixtures = []
+        today = datetime.now()
+        tomorrow = today + timedelta(days=1)
+        
         for i in range(len(fix)):
             fixture_text = fix[i].get_text(separator=" ")
+            
+            # Replace "Today" and "Tomorrow" with actual dates
+            if "Today" in fixture_text:
+                fixture_text = fixture_text.replace("Today", today.strftime("%d/%m/%Y"))
+            if "Tomorrow" in fixture_text:
+                fixture_text = fixture_text.replace("Tomorrow", tomorrow.strftime("%d/%m/%Y"))
+            
             fixtures.append(fixture_text.strip())
         
         return fixtures
