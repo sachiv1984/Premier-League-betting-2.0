@@ -551,6 +551,8 @@
                                 <th scope="col">Home Player</th>
                                 <th scope="col">Mins<br/>(avg/game)</th>
                                 <th scope="col">Fouls Won<br/>(avg/game)</th>
+                                <th scope="col">Last 5 Games<br/>1+ Fouls Won</th>
+                                <th scope="col">Last 5 Games<br/>2+ Fouls Won</th>
                                 <th scope="col">Potential<br/>Opponent</th>
                             </tr>
                         </thead>
@@ -569,6 +571,8 @@
                                 <th scope="col">Away Player</th>
                                 <th scope="col">Mins<br/>(avg/game)</th>
                                 <th scope="col">Fouls Won<br/>(avg/game)</th>
+                                <th scope="col">Last 5 Games<br/>1+ Fouls Won</th>
+                                <th scope="col">Last 5 Games<br/>2+ Fouls Won</th>
                                 <th scope="col">Potential<br/>Opponent</th>
                             </tr>
                         </thead>
@@ -686,18 +690,18 @@
             },
             offensive: {
                 home: [
-                    { name: "M. Salah", minutes: 85, foulsWon: 3.2, opponent: "W. Saliba" },
-                    { name: "L. Díaz", minutes: 78, foulsWon: 2.8, opponent: "B. White" },
-                    { name: "D. Núñez", minutes: 82, foulsWon: 2.4, opponent: "G. Gabriel" },
-                    { name: "R. Firmino", minutes: 71, foulsWon: 2.1, opponent: "T. Partey" },
-                    { name: "A. Robertson", minutes: 85, foulsWon: 1.9, opponent: "B. Saka" }
+                    { name: "M. Salah", minutes: 85, foulsWon: 3.2, opponent: "W. Saliba", foulHistory1Plus: [3,2,1,4,2], foulHistory2Plus: [3,2,0,4,2] },
+                    { name: "L. Díaz", minutes: 78, foulsWon: 2.8, opponent: "B. White", foulHistory1Plus: [2,1,3,0,1], foulHistory2Plus: [2,0,3,0,0] },
+                    { name: "D. Núñez", minutes: 82, foulsWon: 2.4, opponent: "G. Gabriel", foulHistory1Plus: [1,3,2,1,'dnp'], foulHistory2Plus: [0,3,2,0,'dnp'] },
+                    { name: "R. Firmino", minutes: 71, foulsWon: 2.1, opponent: "T. Partey", foulHistory1Plus: [2,0,1,2,1], foulHistory2Plus: [2,0,0,2,0] },
+                    { name: "A. Robertson", minutes: 85, foulsWon: 1.9, opponent: "B. Saka", foulHistory1Plus: [1,1,0,2,1], foulHistory2Plus: [0,0,0,2,0] }
                 ],
                 away: [
-                    { name: "G. Martinelli", minutes: 81, foulsWon: 2.9, opponent: "T. Alexander-Arnold" },
-                    { name: "B. Saka", minutes: 86, foulsWon: 2.7, opponent: "A. Robertson" },
-                    { name: "G. Jesus", minutes: 89, foulsWon: 2.3, opponent: "V. van Dijk" },
-                    { name: "M. Ødegaard", minutes: 88, foulsWon: 2.0, opponent: "F. Fabinho" },
-                    { name: "E. Nketiah", minutes: 65, foulsWon: 1.8, opponent: "J. Matip" }
+                    { name: "G. Martinelli", minutes: 81, foulsWon: 2.9, opponent: "T. Alexander-Arnold", foulHistory1Plus: [4,1,2,3,1], foulHistory2Plus: [4,0,2,3,0] },
+                    { name: "B. Saka", minutes: 86, foulsWon: 2.7, opponent: "A. Robertson", foulHistory1Plus: [2,3,1,2,0], foulHistory2Plus: [2,3,0,2,0] },
+                    { name: "G. Jesus", minutes: 89, foulsWon: 2.3, opponent: "V. van Dijk", foulHistory1Plus: [1,2,0,1,3], foulHistory2Plus: [0,2,0,0,3] },
+                    { name: "M. Ødegaard", minutes: 88, foulsWon: 2.0, opponent: "F. Fabinho", foulHistory1Plus: [2,0,1,'dnp',2], foulHistory2Plus: [2,0,0,'dnp',2] },
+                    { name: "E. Nketiah", minutes: 65, foulsWon: 1.8, opponent: "J. Matip", foulHistory1Plus: [0,1,1,2,1], foulHistory2Plus: [0,0,0,2,0] }
                 ]
             },
             shooting: {
@@ -749,6 +753,18 @@
             }).join('');
         };
 
+        const createFoulWonHistory = (history, threshold) => {
+            return history.map(fouls => {
+                if (fouls === 'dnp') {
+                    return `<div class="foul-dot did-not-play" title="Did not play"></div>`;
+                } else if (fouls >= threshold) {
+                    return `<div class="foul-dot committed" title="${fouls} foul${fouls > 1 ? 's' : ''} won"></div>`;
+                } else {
+                    return `<div class="foul-dot none" title="${fouls} foul${fouls > 1 ? 's' : ''} won (below ${threshold})"></div>`;
+                }
+            }).join('');
+        };
+
         // Render functions for each table section
         const renderDefensiveStats = () => {
             const renderDefensiveRow = (player) => `
@@ -779,6 +795,16 @@
                     <td class="player-name">${player.name}</td>
                     <td>${player.minutes}</td>
                     <td class="${player.foulsWon >= 2.5 ? 'highlight-stat' : ''}">${formatNumber(player.foulsWon)}</td>
+                    <td>
+                        <div class="foul-history">
+                            ${createFoulWonHistory(player.foulHistory1Plus, 1)}
+                        </div>
+                    </td>
+                    <td>
+                        <div class="foul-history">
+                            ${createFoulWonHistory(player.foulHistory2Plus, 2)}
+                        </div>
+                    </td>
                     <td>${player.opponent}</td>
                 </tr>
             `;
