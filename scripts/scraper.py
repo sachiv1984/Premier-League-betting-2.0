@@ -3,6 +3,7 @@ import requests
 from bs4 import BeautifulSoup
 import os
 from datetime import datetime, timedelta
+import re  # Import regular expressions for date pattern matching
 
 def get_fixtures_data():
     """Scrape fixtures from OneFootball"""
@@ -19,21 +20,26 @@ def get_fixtures_data():
         today = datetime.now()
         tomorrow = today + timedelta(days=1)
         
+        # Regular expression to match dates in the format DD/MM/YYYY
+        date_pattern = re.compile(r'\b\d{2}/\d{2}/\d{4}\b')
+        
         for i in range(len(fix)):
             fixture_text = fix[i].get_text(separator=" ")
             
             # Debug: Print the raw fixture text
             print(f"Raw fixture text: {fixture_text}")
             
-            # Check if the fixture text contains a date (look for '/')
-            if '/' not in fixture_text:  # No date format present
-                print(f"No date found in fixture: {fixture_text}. Assuming 'Today'.")
-                fixture_text += f" {today.strftime('%d/%m/%Y')}"
-            
-            # Replace "Tomorrow" with the actual date
+            # Check if "Tomorrow" is present and replace it with the correct date
             if "Tomorrow" in fixture_text:
                 print(f"'Tomorrow' found in fixture: {fixture_text}")
                 fixture_text = fixture_text.replace("Tomorrow", tomorrow.strftime("%d/%m/%Y"))
+            
+            # Check if the fixture text already contains a date
+            if not date_pattern.search(fixture_text):  # No date format present
+                print(f"No date found in fixture: {fixture_text}. Assuming 'Today'.")
+                # Append today's date before the time
+                parts = fixture_text.rsplit(" ", 1)  # Split into main text and time
+                fixture_text = f"{parts[0]} {today.strftime('%d/%m/%Y')} {parts[1]}"
             
             # Debug: Print the processed fixture text
             print(f"Processed fixture text: {fixture_text}")
